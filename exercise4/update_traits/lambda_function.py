@@ -1,17 +1,15 @@
 import base64
 import boto3
 import json
-import os
 import dateutil.parser as dp
 import init_personalize_api as api_helper
 
 def lambda_handler(event, context):
     """ Consumes events from the Kinesis Stream destination configured in Segment. 
     See the Segment documentation for how to setup Kinesis: https://segment.com/docs/destinations/amazon-kinesis/
-    """
 
-    if not 'personalize_tracking_id' in os.environ:
-        raise Exception('personalize_tracking_id not configured as environment variable')
+    Updates a "recommendations" trait on the customer with recommendations from Personalize.
+    """
 
     # Initialize Personalize API (this is temporarily needed until Personalize is fully 
     # integrated into boto3). Leverages Lambda Layer.
@@ -30,7 +28,7 @@ def lambda_handler(event, context):
             print("Calling Personalize.Record()")
             properties = { "id": segment_event["properties"]["sku"] }
             personalize_events.record(
-                trackingId = os.environ['personalize_tracking_id'],
+                trackingId = 'b75aec6d-44e8-45fc-afe5-7a0eb3fe96ac',
                 userId = segment_event['userId'],
                 sessionId = segment_event['anonymousId'],
                 eventList = [
@@ -44,3 +42,8 @@ def lambda_handler(event, context):
             )
         else:
             print("Segment event does not contain required fields (anonymousId, sku, and userId)")
+
+        '''
+        TODO: add logic to get recommendations for the customer/user from Personalize and update 
+        customer in Segment with identify call. Only do this for specific events from Segment?
+        '''
