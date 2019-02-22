@@ -1,0 +1,59 @@
+    {
+    "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "",
+        "Metadata": {
+    
+        },
+        "Parameters": {
+        
+        },
+        "Mappings": {
+    
+        },
+        "Conditions": {
+    
+        },
+        "Resources": {
+            "PersonalizeDataBucket": {
+                "Type" : "AWS::S3::Bucket",
+                "Properties" : {
+                    "BucketName" : {
+                        "Fn::Sub": "personalize-data-${AWS::AccountId}"
+                    }
+                }
+            },
+            "PersonalizeDataBucketPolicy" : {
+                "Type" : "AWS::S3::BucketPolicy",
+                "Properties" : {
+                    "Bucket" : { "Ref" : "PersonalizeDataBucket" },
+                    "PolicyDocument": {
+                        "Statement": [
+                            {
+                                "Sid": "PersonalizeS3BucketAccessPolicy",
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": "personalize.amazonaws.com"
+                                },
+                                "Action": [
+                                    "s3:GetObject",
+                                    "s3:ListBucket"
+                                ],
+                                "Resource": [
+                                    { "Fn::GetAtt": [ "PersonalizeDataBucket", "Arn" ] },
+                                    {
+                                        "Fn::Join": [ "", [
+                                            { "Fn::GetAtt": [ "PersonalizeDataBucket", "Arn" ] },
+                                            "/*"
+                                        ]]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Outputs": {
+    
+        }
+    }

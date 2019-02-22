@@ -1,0 +1,254 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "IAM Roles required for Segment + Personalize workshop",
+    "Parameters": {
+        "KinesisStreamName": {
+            "Type": "String",
+            "Default": "SegmentDestinationStream",
+            "Description": "Enter name for Kinesis stream written to by Segment as a destination."
+        },
+        "SegmentSecretId": {
+            "Type": "String",
+            "Default": "123456789",
+            "Description": "Enter Segment Secret ID that should be used for External ID in cross-account trust policy."
+        },
+        "CampaignName": {
+            "Type": "String",
+            "Default": "segment-workshop-campaign",
+            "Description": "Enter the name of the Personalize Campaign to use for fetching recommendations."
+        }
+    },
+    "Resources": {
+        "GlueServiceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/service-role/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:PutObject"
+                                    ],
+                                    "Resource": [
+                                        { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/raw-events/events.json*" },
+                                        { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/transformed/*" }
+                                    ]
+                                }
+                            ]
+                        },
+                        "PolicyName": "glue-execution-policy"                        
+                    }
+                ],
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "glue.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "SegmentKinesisRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "kinesis:PutRecord"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${KinesisStreamName}"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "segment-kinesis-policy"                        
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "arn:aws:iam::595280932656:root"
+                            },
+                            "Action": "sts:AssumeRole",
+                            "Condition": {
+                                "StringEquals": {
+                                    "sts:ExternalId": { "Ref": "SegmentSecretId" }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "PersonalizeExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/service-role/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "s3:ListBucket"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}"
+                                    }
+                                },
+                                {
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:PutObject"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/*"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "personalize-execution-policy"                        
+                    }
+                ],
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonPersonalizeFullAccess"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "personalize.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "SegmentKinesisHandlerRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "personalize:Record"
+                                    ],
+                                    "Resource": [
+                                        "*",
+                                        { "Fn::Sub": "arn:aws:personalize-events:${AWS::Region}:${AWS::AccountId}:*" }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "personalize:GetRecommendations"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:personalize:${AWS::Region}:${AWS::AccountId}:campaign/${CampaignName}"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "segment-kinesis-handler-policy"                        
+                    }
+                ],
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "PersonalizeDataBucket": {
+            "Type" : "AWS::S3::Bucket",
+            "Properties" : {
+                "BucketName" : {
+                    "Fn::Sub": "personalize-data-${AWS::AccountId}"
+                }
+            }
+        },
+        "PersonalizeDataBucketPolicy" : {
+            "Type" : "AWS::S3::BucketPolicy",
+            "Properties" : {
+                "Bucket" : { "Ref" : "PersonalizeDataBucket" },
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Sid": "PersonalizeS3BucketAccessPolicy",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "personalize.amazonaws.com"
+                            },
+                            "Action": [
+                                "s3:GetObject",
+                                "s3:ListBucket"
+                            ],
+                            "Resource": [
+                                { "Fn::GetAtt": [ "PersonalizeDataBucket", "Arn" ] },
+                                {
+                                    "Fn::Join": [ "", [
+                                        { "Fn::GetAtt": [ "PersonalizeDataBucket", "Arn" ] },
+                                        "/*"
+                                    ]]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+ }
