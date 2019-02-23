@@ -1,3 +1,3 @@
 
-# Exercise 2 - Create Personalize Solution
+# Exercise 2 - Create Personalize Dataset Group and Solution
 
