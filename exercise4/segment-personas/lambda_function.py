@@ -1,11 +1,41 @@
 import json
 import boto3
 import os
+import requests  # Needed for Personas + Segment Events REST APIs
 import init_personalize_api as api_helper
 
+personas_endpoint_url = "https://profiles.segment.com"
+connections_endpoint_url = "https://api.segment.io/v1"
+
+personas_api_key = ''
+connections_source_api_key = ''
+
+def api_get(url, key)
+    myResponse = requests.get(url,auth=(key, ''))
+    #print (myResponse.status_code)
+
+    # For successful API call, response code will be 200 (OK)
+    if(myResponse.ok):
+
+        # Loading the response data into a dict variable
+        # json.loads takes in only binary or string variables so using content to fetch binary content
+        # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
+        jData = json.loads(myResponse.content)
+
+        print("The response contains {0} properties".format(len(jData)))
+        print("\n")
+        for key in jData:
+            print key + " : " + jData[key]
+    else:
+      # If response code is not ok (200), print the resulting http error code with description
+        myResponse.raise_for_status()
+
+def api_post(url, key)
+    # stuff here
+
 def lambda_handler(event, context):
-    """ Proxies requests from API Gateway to the Personalize GetRecommendations endpoint. 
-    This function also fetches the customer's profile from Segment and illustrates how to 
+    """ Proxies requests from API Gateway to the Personalize GetRecommendations endpoint.
+    This function also fetches the customer's profile from Segment and illustrates how to
     use a trait on the profile to perform filtering of recommendations. For example, to filter
     recommendatios for products that the customer has purcased since the model was last trained.
 
@@ -15,10 +45,10 @@ def lambda_handler(event, context):
     numResults - number of recommendations to return (optional, will inherit default from Personalize if absent)
     """
 
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully 
+    # Initialize Personalize API (this is temporarily needed until Personalize is fully
     # integrated into boto3). Leverages Lambda Layer.
     api_helper.init()
-    
+
     print("event: " + json.dumps(event))
 
     # Allow Personalize API to be overriden via environment variables. Optional.
@@ -30,32 +60,32 @@ def lambda_handler(event, context):
 
     personalize = boto3.client(**api_params)
 
-    # Build parameters for recommendations request. The Campaign ARN must be specified as 
+    # Build parameters for recommendations request. The Campaign ARN must be specified as
     # an environment variable.
     if not 'personalize_campaign_arn' in os.environ:
         return {
             'statusCode': 500,
             'body': 'Server is not configured correctly'
         }
-        
+
     params = { 'campaignArn': os.environ['personalize_campaign_arn'] }
-    
+
     if 'userId' in event['queryStringParameters']:
         params['userId'] = event['queryStringParameters']['userId']
     if 'itemId' in event['queryStringParameters']:
         params['itemId'] = event['queryStringParameters']['itemId']
     if 'numResults' in event['queryStringParameters']:
         params['numResults'] = int(event['queryStringParameters']['numResults'])
-    
+
     recommendations = personalize.get_recommendations(**params)
 
-    # For this version of the function we're just returning the recommendations from 
+    # For this version of the function we're just returning the recommendations from
     # Personalize directly back to the caller.
     print(recommendations)
 
-    ''' 
+    '''
     TODO:
-    
+
     1. Call Segment Profile API to fetch customer profile.
     2. Filter recommendations from Personalize against purchase history attached to customer profile as trait.
     3. Update return statement below to return filtered recommendations.
