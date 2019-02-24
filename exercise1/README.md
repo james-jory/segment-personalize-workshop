@@ -27,9 +27,33 @@ git clone https://github.com/james-jory/segment-personalize-workshop.git
 
 ## Part 1 - Create S3 Destination in Segment
 
-TODO: write instructions and capture screenshots
+Although we won't be testing pushing data from Segment to S3 in the workshop due to time limitations, we will walk through how to configure an S3 destination in Segment. Start by logging in to your Segment account and clicking "Destinations" in the left navigation. Then click the "Add Destination" button.
 
-Detailed instructions can be found on Segment's [documentation site](https://segment.com/docs/destinations/amazon-s3/).
+![Segment Destinations](images/SegmentAddDestination.png)
+
+On the Destination catalog page, search for "S3" in the search field. Click on "Amazon S3" in the search results.
+
+![Segment find S3 Destination](images/SegmentS3-Destination.png)
+
+Click "Configure Amazon S3" to setup the S3 destination.
+
+![Segment S3 Configuration](images/SegmentS3-Configure.png)
+
+On the "Select Source" page, select an existing Source and click the "Confirm Source" button. To learn more about setting up Sources in Segment, see the Segment [documentation](https://segment.com/docs/sources/).
+
+![Segment S3 Confirm Source](images/SegmentS3-ConfirmSource.png)
+
+The Settings page for the S3 Destination requires an S3 bucket name. An S3 bucket has already been created for you in your AWS account for the workshop. To find the bucket name, login to your AWS workshop account and browse to the S3 service page in a different browser tab/window. Locate the bucket with a name starting with `personalize-data-...`. Click on the bucket name and copy the name to your clipboard.
+
+![Segment S3 Destination Bucket Name](images/SegmentS3-BucketName.png)
+
+Back on the Segment Amazon S3 destination settings page, paste the bucket name into the "Bucket Name" field. Also be sure to activate the destination at the top of the configuration form.
+
+![Segment S3 Destination Settings](images/SegmentS3-Settings.png)
+
+Detailed instructions for configuring an S3 destination can be found on Segment's [documentation site](https://segment.com/docs/destinations/amazon-s3/).
+
+As mentioned above, we won't be testing actually pushing data through the S3 destination in this workshop due to time limitations. Instead, we will upload a dataset in the next part.
 
 ## Part 2 - Upload Raw Interaction Test Data to S3
 
@@ -221,3 +245,5 @@ Click the "Run query" button to execute this query against the CSV file.
 You will see the columns we specified in the "ApplyMapping" transformation in our Glue job as well as the "timestamp" column we added to represent the event time in UNIX timestamp format.
 
 Experiment with additional queries on your own to get a better sense of how standard SQL can be used to explore your data on S3 using Athena. As you iterate on extracting and loading your datasets into Personalize, Athena can be a valuable tool to quickly investigate values in your datasets to understand and troubleshoot your data.
+
+In the next [exercise](../exercise2/) we will create a Personalize Dataset Group and import the CSV as an interaction dataset.
