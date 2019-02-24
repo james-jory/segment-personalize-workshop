@@ -57,7 +57,7 @@ First, ensure that you are logged in to the AWS account provided to you for this
 Click the "Add job" button and enter the following information.
 
 * Enter a job name such as "SegmentEventsJsonToCsv".
-* For IAM role, a role has already been created for you that starts with the name "SegmentPersonalizeWorkshop-GlueServiceRole-...". Select this role.
+* For IAM role, a role has already been created for you that starts with the name "module-personalize-GlueServiceRole-...". Select this role.
 * Leave Type as "Spark".
 * For "This job runs", click the radio button "A new script to be authored by you".
 * Leave everything else the same and click Next at the bottom of the form.
@@ -104,7 +104,13 @@ interactions = Filter.apply(frame = datasource0, f = filter_function, transforma
 Next we will call Glue's `ApplyMapping` transformation, passing the `interactions` DynamicFrame from above and field mapping specification that indicates the fields we want to retain and their new names. These mapped field names will become the column names in our output CSV. You'll notice that we're using the product SKU as the `ITEM_ID` and `event` as the `EVENT_TYPE`. We're also renaming the `timestamp` field to `TIMESTAMP_ISO` since the format of this field value in the JSON file is an ISO 8601 date and Personalize requires timestamps to be specified in UNIX time (number seconds since Epoc).
 
 ```python
-applymapping1 = ApplyMapping.apply(frame = interactions, mappings = [("anonymousId", "string", "ANONYMOUS_ID", "string"),("userId", "string", "USER_ID", "string"),("properties.sku", "string", "ITEM_ID", "string"),("event", "string", "EVENT_TYPE", "string"),("timestamp", "string", "TIMESTAMP_ISO", "string")], transformation_ctx = "applymapping1")
+applymapping1 = ApplyMapping.apply(frame = interactions, mappings = [ \
+    ("anonymousId", "string", "ANONYMOUS_ID", "string"), \
+    ("userId", "string", "USER_ID", "string"), \
+    ("properties.sku", "string", "ITEM_ID", "string"), \
+    ("event", "string", "EVENT_TYPE", "string"), \
+    ("timestamp", "string", "TIMESTAMP_ISO", "string")], \
+    transformation_ctx = "applymapping1")
 ```
 
 To convert the ISO 8601 date format to UNIX time for each record, we'll use Spark's `withColumn(...)` to create a new column called `TIMESTAMP` that is the converted value of the `TIMESTAMP_ISO` field. Before we can call `withColumn`, though, we need to convert the Glue DynamicFrame into a Spark DataFrame. That is accomplished by calling `toDF()` on the output of ApplyMapping transformation above. Since Personalize requires our uploaded CSV to be a single file, we'll call `repartition(1)` on the DataFrame to force all data to be written in a single partition. Finally, after creating the `TIMESTAMP` in the expected format, `DyanmicFrame.fromDF()` is called to convert the DataFrame back into a DyanmicFrame.
@@ -113,15 +119,18 @@ To convert the ISO 8601 date format to UNIX time for each record, we'll use Spar
 # Repartition to a single file
 onepartitionDF = applymapping1.toDF().repartition(1)
 # Coalesce timestamp into unix timestamp
-onepartitionDF = onepartitionDF.withColumn("TIMESTAMP", unix_timestamp(onepartitionDF['TIMESTAMP_ISO'], "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
-# Convert back to dyanmic frame
+onepartitionDF = onepartitionDF.withColumn("TIMESTAMP", \
+    unix_timestamp(onepartitionDF['TIMESTAMP_ISO'], "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+# Convert back to dynamic frame
 onepartition = DynamicFrame.fromDF(onepartitionDF, glueContext, "onepartition_df")
 ```
 
-The last step is to write our CSV back to S3 at the path specified by the `S3_CSV_OUTPUT_PATH` job property and commit out job.
+The last step is to write our CSV back to S3 at the path specified by the `S3_CSV_OUTPUT_PATH` job property and commit the job.
 
 ```python
-glueContext.write_dynamic_frame.from_options(frame = onepartition, connection_type = "s3", connection_options = {"path": args['S3_CSV_OUTPUT_PATH']}, format = "csv", transformation_ctx = "datasink2")
+glueContext.write_dynamic_frame.from_options(frame = onepartition, connection_type = "s3", \
+    connection_options = {"path": args['S3_CSV_OUTPUT_PATH']}, \
+    format = "csv", transformation_ctx = "datasink2")
 
 job.commit()
 ```
@@ -130,11 +139,11 @@ job.commit()
 
 With our ETL Job script created and saved, it's time to run the job to create the CSV needed to train a Personalize Solution.
 
-Click the "Run job" button. This will cause the Parameters panel to display. Click the "Security configuration, script libraries, and job parameters" section header to cause the job parameters fields to be displayed.
+While still in the Glue service console and the job listed, click the "Run job" button. This will cause the Parameters panel to display. Click the "Security configuration, script libraries, and job parameters" section header to cause the job parameters fields to be displayed.
 
 ![Glue Job Parameters](images/GlueRunJobDialog.png)
 
-Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. The order they are specified does not matter.
+Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. The order they are specified does not matter.
 
 | Key                  | Value                                          |
 | -------------------- | ---------------------------------------------- |
@@ -143,7 +152,7 @@ Scroll down to the "Job parameters" section. This is where we will specify the j
 
 ![Glue Job Parameters](images/GlueRunJobParams.png)
 
-Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page.
+Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. It may take a few minutes to complete.
 
 When the job completes click the "X" in the upper right corner of the the page to exit the job script editor.
 
@@ -171,7 +180,7 @@ For the data store, select S3 and "Specified path in my account". For the "Inclu
 
 ![Glue Add Crawler Data Store](images/GlueCrawlerAddDataStore.png)
 
-For the IAM role, select "Choose an existing IAM role" radio button and then select the "SegmentPersonalizeWorkship-GlueServiceRole-..." role from the dropdown. Click "Next".
+For the IAM role, select "Choose an existing IAM role" radio button and then select the "module-personalize-GlueServiceRole-..." role from the dropdown. Click "Next".
 
 ![Glue Add Crawler Role](images/GlueCrawlerAddRole.png)
 
@@ -179,23 +188,36 @@ Leave the Frequency set to "Run on demand" and click "Next".
 
 ![Glue Add Crawler Schedule](images/GlueCrawlerAddOnDemand.png)
 
-For the crawler output, create a database called "segmentdata". Click "Next".
+For the crawler output, click the "Add database" button and create a database named "segmentdata". Click "Next".
 
 ![Glue Add Crawler Output](images/GlueCrawlerAddOutput.png)
 
-On the review page, click "Finish".
+On the review page, click "Finish" at the bottom of the page.
 
-From the Crawlers page, click the "Run it now?" link or select the crawler and click "Run crawler".
+From the Crawlers page, click the "Run it now?" link or select the checkbox for the crawler you just created and click "Run crawler".
 
-Wait for the crawler to finish. It should take about 1-2 minutes.
+Wait for the crawler to finish. It should take about 1-2 minutes. Once completed, the crawler will add a table named "segmentdata.transformed" to the Glue data catalog.
 
 ### Data Exploration
 
 Now let's use Amazon Athena to query the transformed data just crawled.
 
-* Browse to Athena in the AWS console. Ensure that you are still in the N. Virginia region.
-* Make sure your database is selected in the left panel and you should see the "transformed" table below the database.
-* Query the first 50 records from the CSV by copy/pasting the following query into the "New query" tab.
-    `SELECT * FROM "segmentdata2"."transformed" limit 50;`
-* Click "Run query" to execute the query. You should see results displayed.
+Browse to Athena in the AWS console, ensuring that you are still in the N. Virginia region.
 
+Make sure your database is selected in the left panel and you should see the "transformed" table below the database.
+
+![Athena Database and Table](images/AthenaDbAndTable.png)
+
+The "New query 1" tab should be pre-populated with the following query.
+
+```sql
+SELECT * FROM "segmentdata"."transformed" limit 10;
+```
+
+Click the "Run query" button to execute this query against the CSV file.
+
+![Athena Query Results](images/AthenaQueryResults.png)
+
+You will see the columns we specified in the "ApplyMapping" transformation in our Glue job as well as the "timestamp" column we added to represent the event time in UNIX timestamp format.
+
+Experiment with additional queries on your own to get a better sense of how standard SQL can be used to explore your data on S3 using Athena. As you iterate on extracting and loading your datasets into Personalize, Athena can be a valuable tool to quickly investigate values in your datasets to understand and troubleshoot your data.
