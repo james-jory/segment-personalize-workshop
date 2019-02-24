@@ -10,6 +10,13 @@ import sys
 import uuid
 
 from_date = sys.argv[1]
+
+#
+# Add your Segment write keys here.
+# You should have one source configured for web, ios, android, and email in
+# your Segment workspace.
+#
+
 web_write_key = '8OjsXlxUPyxoCJONNG7AwFhPRH29zbMP'
 android_write_key = 'nrLyVtRxcFCm27VB2oe91oYywgG5RzjA'
 ios_write_key = 'wOMzkIO14oiRQjmdmG1YTJ5WChiNHmAo'
