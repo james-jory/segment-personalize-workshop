@@ -54,6 +54,15 @@ usage_paths = [
       'dependent_props_list': {
       }
     }
+  ],
+  [
+    {'event_name': 'Order Completed',
+      'property_choices': {
+        'sku': [("adidas-classic-backpack", 5), ("adidas-classic-backpack-legend-ink-multicolour", 5), ("adidas-kids-stan-smith", 5), ("adidas-superstar-80s", 5), ("asics-tiger-gel-lyte-v-30-years-of-gel-pack", 5), ("black-leather-bag", 5), ("blue-silk-tuxedo", 5), ("chequered-red-shirt", 5), ("classic-leather-jacket", 5), ("classic-varsity-top", 5), ("converse-chuck-taylor-all-star-ii-hi", 5), ("converse-chuck-taylor-all-star-lo", 5), ("converse-toddler-chuck-taylor-all-star-axel-mid", 5), ("dark-denim-top", 5), ("dr-martens-1460z-dmc-8-eye-boot-cherry-smooth", 5), ("dr-martens-1461-dmc-3-eye-shoe-black-smooth", 5), ("dr-martens-cavendish-3-eye-shoe-black", 5), ("flex-fit-mini-ottoman-black", 5), ("floral-white-top", 5), ("herschel-iona", 5), ("led-high-tops", 5), ("longsleeve-cotton-top", 5), ("navy-sport-jacket", 5), ("nike-crackle-print-tb-tee", 5), ("nike-swoosh-pro-flat-peak-cap", 5), ("nike-toddler-roshe-one", 5), ("ocean-blue-shirt", 5), ("olive-green-jacket", 5), ("palladium-pallatech-hi-tx-chevron", 5), ("puma-suede-classic-regal", 5), ("red-sports-tee", 5), ("silk-summer-top", 5), ("dark-winter-jacket", 5), ("striped-silk-blouse", 5), ("striped-skirt-and-top", 5), ("supra-mens-vaider", 5), ("timberland-mens-6-inch-premium-boot", 5), ("vans-apparel-and-accessories-classic-super-no-show-socks-3-pack-white", 5), ("vans-era-59-moroccan-geo-dress-blues", 5), ("vans-authentic-butterfly-true-white-black", 5), ("vans-authentic-multi-eyelets-gradient-crimson", 5), ("vans-classic-slip-on-perforated-suede", 5), ("vans-era-59-desert-cowboy", 5), ("vans-old-skool-butterfly-true-white-black", 5), ("vans-sh-8-hi", 5), ("vans-sk8-hi-decon-cutout-leaves-white", 5), ("vans-authentic-lo-pro-burgandy-white", 5), ("white-cotton-shirt", 5), ("yellow-wool-jumper", 5), ("zipped-jacket", 5)]
+      },
+      'dependent_props_list': {
+      }
+    }
   ]
 ]
 
