@@ -56,7 +56,7 @@ def set_user_traits(user_id, traits):
     print(json.dumps(message))
     api_post(formatted_url, connections_source_api_key, message)
 
-test_user_id = '6529150601'
+test_user_id = '6828041333'
 api_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-west-2', 'endpoint_url': 'https://personalize-runtime.us-west-2.amazonaws.com' }
 personalize = boto3.client(**api_params)
 params = { 'campaignArn': campaign_arn, 'userId': test_user_id }
@@ -68,11 +68,13 @@ recommended_items = [d['itemId'] for d in response['itemList'] if 'itemId' in d]
 
 print(recommended_items)
 
-userTraits = get_user_traits(test_user_id)  # Get Stanley Jenkin's traits
+user_traits = get_user_traits(test_user_id)  # Get Brian Butler's traits
 
-if 'purchased_products' in userTraits:
+print(user_traits)
+
+if 'purchased_products' in user_traits:
     # Remove already purchased products from the recommended traits
-    recommended_items = set(purchased_products).symmetric_difference(recommended_items)
+    recommended_items = list(set(user_traits['purchased_products']).symmetric_difference(recommended_items))
 
 print(recommended_items)
 
