@@ -102,7 +102,15 @@ def lambda_handler(event, context):
 
     userTraits = get_user_traits(userId)
 
+    print(user_traits)
+
+    if 'purchased_products' in user_traits:
+        # Remove already purchased products from the recommended traits
+        recommended_items = list(set(user_traits['purchased_products']).symmetric_difference(recommended_items))
+
+    print(recommended_items)
+
     return {
         'statusCode': 200,
-        'body': json.dumps(recommendations)
+        'body': json.dumps(recommended_items)
     }
