@@ -1,6 +1,7 @@
 import base64
 import boto3
 import json
+import os
 import dateutil.parser as dp
 import init_personalize_api as api_helper
 
@@ -10,6 +11,9 @@ def lambda_handler(event, context):
 
     Updates a "recommendations" trait on the customer with recommendations from Personalize.
     """
+
+    if not 'personalize_tracking_id' in os.environ:
+        raise Exception('personalize_tracking_id not configured as environment variable')
 
     # Initialize Personalize API (this is temporarily needed until Personalize is fully 
     # integrated into boto3). Leverages Lambda Layer.
@@ -28,7 +32,7 @@ def lambda_handler(event, context):
             print("Calling Personalize.Record()")
             properties = { "id": segment_event["properties"]["sku"] }
             personalize_events.record(
-                trackingId = 'b75aec6d-44e8-45fc-afe5-7a0eb3fe96ac',
+                trackingId = os.environ['personalize_tracking_id'],
                 userId = segment_event['userId'],
                 sessionId = segment_event['anonymousId'],
                 eventList = [

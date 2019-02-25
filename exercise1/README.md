@@ -74,7 +74,7 @@ Since the raw format, fields, and event types in the Segment event data cannot b
 
 ### Create AWS Glue ETL Job
 
-First, ensure that you are logged in to the AWS account provided to you for this workshop. Then browse to the Glue service in the console, making sure that the AWS region is "N. Virginia" (us-east-1). Then click "Jobs" in the left navigation on the Glue console page.
+First, ensure that you are logged in to the AWS account provided to you for this workshop. Then browse to the Glue service in the console, making sure that the AWS region is "N. Virginia" (us-east-1). Click the "Get started" button and then click "Jobs" in the left navigation on the Glue console page.
 
 ![Glue Jobs](images/GlueJobs.png)
 

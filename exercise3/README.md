@@ -31,7 +31,7 @@ We'll start by creating a Kinesis Stream in AWS that will be the sink for events
 
 ![Kinesis Dashboard](images/KinesisDashboard.png)
 
-On the "Create Kinesis stream" page, enter the stream name as "SegmentDestinationStream". __This stream is required since there are IAM roles that have been pre-provisioned based on this stream name__. A shard count of "1" will be more than adequate for the workshop. Click the "Create Kinesis stream" button at the bottom of the page to create the stream.
+On the "Create Kinesis stream" page, enter the stream name as "SegmentDestinationStream". __You must name your stream "SegmentDestinationStream" since there are IAM roles that have been pre-provisioned based on this stream name__. A shard count of "1" will be more than adequate for the workshop. Click the "Create Kinesis stream" button at the bottom of the page to create the stream.
 
 ![Create Kinesis Stream](images/KinesisCreateStream.png)
 
@@ -78,7 +78,24 @@ Complete the "Amazon Kinesis Settings" page by entering "us-east-1" for the AWS 
 
 ## Part 3 - Test Kinesis Destination using Event Tester
 
-In your Segment account, click on the Event Tester for the Kinesis Destination just created above. Edit the JSON for the test event to include a `sku` field inside `properties`. Set the `sku` value to `ocean-blue-shirt` (which is a SKU in our test dataset) and change the `userId` to `2941404340` (which also a valid user in our dataset). Finally, add an `anonymousId` field to the JSON document since our ETL job references it as well.
+In your Segment account, click on the Event Tester for the Kinesis Destination just created above. Edit the JSON for the test event to include a `sku` field inside `properties`. Set the `sku` value to `ocean-blue-shirt` (which is a SKU in our test dataset), change the `userId` to `2941404340` (which also a valid user in our dataset), and change the event to `Product Clicked`. Finally, add an `anonymousId` field to the JSON document since our ETL job references it as well.
+
+```json
+{
+  "messageId": "test-message-33dlvn",
+  "timestamp": "2019-02-25T15:55:05.905Z",
+  "type": "track",
+  "email": "test@example.org",
+  "properties": {
+    "skue": "ocean-blue-shirt",
+    "property2": "test",
+    "property3": true
+  },
+  "userId": "2941404340",
+  "anonymousId": "2941404340",
+  "event": "Product Clicked"
+}
+```
 
 Click the "Send Event" button to send this event to Kinesis. You should see a 200/success response in the right panel. Send the event 5-10 more times to add multiple events to the stream (and enough to complete a batch for the Lambda consumer function that we will be building in the next part of this exercise).
 
@@ -187,7 +204,7 @@ From the Lambda Layers view, click the "Create layer" button.
 
 ![Lambda Create Layer](images/LambdaCreateLayer.png)
 
-Create the layer by specifying a name such as "PersonalizeApiInstaller", browsing to the pre-made zip in this repository at "support/layer/python_personalize_init.zip", and selecting Python 3.7 as the compatible runtime. Click the "Create" button to upload the zip file and create the layer.
+Create the layer by specifying a name such as "PersonalizeApiInstaller", browsing to the pre-made zip in this repository at `support/layer/python_personalize_init.zip`, and selecting Python 3.7 as the compatible runtime. Click the "Create" button to upload the zip file and create the layer.
 
 ![Lambda Create Layer Config](images/LambdaCreateLayerConfig.png)
 
@@ -256,3 +273,13 @@ Scroll down the page to the "Configure triggers" panel. Select the Kinesis strea
 Scroll to the top of the page and click the "Save" button to save all of our changes.
 
 ![Lambda Save Function](images/LambdaSaveFunction.png)
+
+After your Lambda function has been saved and has completed its first poll of the Kinesis stream, you should start to see invocation, duration, availability statistics appear on the Lambda Monitoring tab.
+
+![Lambda Save Function](images/LambdaMonitoring.png)
+
+In addition, you can inspect the CloudWatch Logs for our function to see the logging output including any errors that may have occurred.
+
+![Lambda Monitoring](images/CloudWatchLambda.png)
+
+In the final [exercise](../exercise4) we will bring everything together and learn how to integrate recommendations from Personalize in your application as well as how to use Segment to activate recommendations in other integrations in your Segment account.
