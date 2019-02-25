@@ -57,20 +57,23 @@ def set_user_traits(user_id, traits):
     api_post(formatted_url, connections_source_api_key, message)
 
 test_user_id = '6529150601'
-api_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-east-1', 'endpoint_url': 'https://personalize-runtime.us-east-1.amazonaws.com' }
+api_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-west-2', 'endpoint_url': 'https://personalize-runtime.us-west-2.amazonaws.com' }
 personalize = boto3.client(**api_params)
 params = { 'campaignArn': campaign_arn, 'userId': test_user_id }
 
-recommendations = personalize.get_recommendations(**params)
+response = personalize.get_recommendations(**params)
+#print(response['itemList'])
 
-print(recommendations)
+recommended_items = [d['itemId'] for d in response['itemList'] if 'itemId' in d]
+
+print(recommended_items)
 
 userTraits = get_user_traits(test_user_id)  # Get Stanley Jenkin's traits
 
 if 'purchased_products' in userTraits:
     # Remove already purchased products from the recommended traits
-    recommendations = set(purchased_products).symmetric_difference(recommendations)
+    recommended_items = set(purchased_products).symmetric_difference(recommended_items)
 
-print(recommendations)
+print(recommended_items)
 
-# set_user_traits(test_user_id, { 'recommended_products' : recommendations })
+set_user_traits(test_user_id, { 'recommended_products' : recommended_items })
