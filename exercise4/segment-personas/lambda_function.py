@@ -2,36 +2,43 @@ import json
 import boto3
 import os
 import requests  # Needed for Personas + Segment Events REST APIs
+import json
 import init_personalize_api as api_helper
 
-personas_endpoint_url = "https://profiles.segment.com"
+personas_endpoint_url = "https://profiles.segment.com/v1/spaces"
 connections_endpoint_url = "https://api.segment.io/v1"
 
-personas_api_key = ''
-connections_source_api_key = ''
+personas_api_key = os.environ['personas_api_key']
+personas_workspace_id = os.environ['personas_workspace_id']
+connections_source_api_key = os.environ['connections_source_api_key']
 
-def api_get(url, key)
+def api_get(url, key):
     myResponse = requests.get(url,auth=(key, ''))
-    #print (myResponse.status_code)
-
-    # For successful API call, response code will be 200 (OK)
     if(myResponse.ok):
-
-        # Loading the response data into a dict variable
-        # json.loads takes in only binary or string variables so using content to fetch binary content
-        # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
         jData = json.loads(myResponse.content)
-
-        print("The response contains {0} properties".format(len(jData)))
-        print("\n")
-        for key in jData:
-            print key + " : " + jData[key]
+        return jData
     else:
-      # If response code is not ok (200), print the resulting http error code with description
         myResponse.raise_for_status()
 
-def api_post(url, key)
-    # stuff here
+def api_post(url, key, payload):
+    myResponse = requests.post(url,auth=(key, ''), json=payload)
+    if(myResponse.ok):
+        jData = json.loads(myResponse.content)
+        return jData
+    else:
+        myResponse.raise_for_status()
+
+def get_user_traits(user_id):
+    # Calls Profile API to get the user profile traits by their userId
+    formatted_url = "{:s}/{:s}/collections/users/profiles/user_id:{:s}/traits?limit=100".format(personas_endpoint_url, personas_workspace_id, user_id)
+    jData = api_get(formatted_url, personas_api_key)
+    return jData['traits'] # return the traits dict
+
+def set_user_traits(user_id, traits):
+    # Sends an identify call to Personas to update a user's traits
+    formatted_url = "{:s}/identify".format(connections_endpoint_url)
+    message = { "traits": traits, "userId": user_id, "type": "identify" }
+    api_post(formatted_url, connections_source_api_key, message)
 
 def lambda_handler(event, context):
     """ Proxies requests from API Gateway to the Personalize GetRecommendations endpoint.
