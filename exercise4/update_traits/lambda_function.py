@@ -43,7 +43,7 @@ def set_user_traits(user_id, traits):
     api_post(formatted_url, connections_source_api_key, message)
 
 def lambda_handler(event, context):
-    """ 
+    """
     """
 
     if not 'personalize_tracking_id' in os.environ:
@@ -52,7 +52,7 @@ def lambda_handler(event, context):
     if not 'personalize_campaign_arn' in os.environ:
         raise Exception('personalize_campaign_arn not configured as environment variable')
 
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully 
+    # Initialize Personalize API (this is temporarily needed until Personalize is fully
     api_helper.init()
 
     print("event: " + json.dumps(event))
@@ -72,6 +72,7 @@ def lambda_handler(event, context):
         segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
         print("Segment event: " + json.dumps(segment_event))
 
+        # TODO: Add check for the three workshop events here
         if 'anonymousId' in segment_event and 'userId' in segment_event and 'properties' in segment_event and 'sku' in segment_event["properties"]:
             print("Calling Personalize.Record()")
             userId = segment_event['userId']
@@ -92,7 +93,9 @@ def lambda_handler(event, context):
 
             params = { 'campaignArn': os.environ['personalize_campaign_arn'], 'userId': userId }
 
-            recommendations = personalize_runtime.get_recommendations(**params)
+            response = personalize_runtime.get_recommendations(**params)
+
+            recommended_items = [d['itemId'] for d in response['itemList'] if 'itemId' in d]
 
             userTraits = get_user_traits(userId)
 
