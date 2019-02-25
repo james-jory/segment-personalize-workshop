@@ -77,8 +77,10 @@ def lambda_handler(event, context):
 
     params = { 'campaignArn': os.environ['personalize_campaign_arn'] }
 
+    userId = ''
     if 'userId' in event['queryStringParameters']:
-        params['userId'] = event['queryStringParameters']['userId']
+        userId = event['queryStringParameters']['userId']
+        params['userId'] = userId
     if 'itemId' in event['queryStringParameters']:
         params['itemId'] = event['queryStringParameters']['itemId']
     if 'numResults' in event['queryStringParameters']:
@@ -97,6 +99,8 @@ def lambda_handler(event, context):
     2. Filter recommendations from Personalize against purchase history attached to customer profile as trait.
     3. Update return statement below to return filtered recommendations.
     '''
+
+    userTraits = get_user_traits(userId)
 
     return {
         'statusCode': 200,
