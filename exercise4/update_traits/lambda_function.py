@@ -1,8 +1,10 @@
 import json
 import boto3
 import os
+import base64
 import requests  # Needed for Personas + Segment Events REST APIs
 import json
+import dateutil.parser as dp
 import init_personalize_api as api_helper
 
 personas_endpoint_url = "https://profiles.segment.com/v1/spaces"
@@ -41,79 +43,69 @@ def set_user_traits(user_id, traits):
     api_post(formatted_url, connections_source_api_key, message)
 
 def lambda_handler(event, context):
-    """ Proxies requests from API Gateway to the Personalize GetRecommendations endpoint.
-    This function also fetches the customer's profile from Segment and illustrates how to
-    use a trait on the profile to perform filtering of recommendations. For example, to filter
-    recommendatios for products that the customer has purcased since the model was last trained.
-
-    This function accepts the following arguments as query string parameters:
-    userId - ID of the user to make recommendations (required for recommendations for a user)
-    itemId - ID of the item to make recommendations (i.e. related items) (required for related items)
-    numResults - number of recommendations to return (optional, will inherit default from Personalize if absent)
+    """ 
     """
 
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully
-    # integrated into boto3). Leverages Lambda Layer.
+    if not 'personalize_tracking_id' in os.environ:
+        raise Exception('personalize_tracking_id not configured as environment variable')
+
+    if not 'personalize_campaign_arn' in os.environ:
+        raise Exception('personalize_campaign_arn not configured as environment variable')
+
+    # Initialize Personalize API (this is temporarily needed until Personalize is fully 
     api_helper.init()
 
     print("event: " + json.dumps(event))
 
     # Allow Personalize API to be overriden via environment variables. Optional.
-    api_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-east-1', 'endpoint_url': 'https://personalize-runtime.us-east-1.amazonaws.com' }
+    runtime_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-east-1', 'endpoint_url': 'https://personalize-runtime.us-east-1.amazonaws.com' }
     if 'region_name' in os.environ:
-        api_params['region_name'] = os.environ['region_name']
+        runtime_params['region_name'] = os.environ['region_name']
     if 'endpoint_url' in os.environ:
-        api_params['endpoint_url'] = os.environ['endpoint_url']
+        runtime_params['endpoint_url'] = os.environ['endpoint_url']
 
-    personalize = boto3.client(**api_params)
+    personalize_runtime = boto3.client(**runtime_params)
+    personalize_events = boto3.client('personalize-events')
 
-    # Build parameters for recommendations request. The Campaign ARN must be specified as
-    # an environment variable.
-    if not 'personalize_campaign_arn' in os.environ:
-        return {
-            'statusCode': 500,
-            'body': 'Server is not configured correctly'
-        }
+    for record in event['Records']:
+        print("Payload: " + json.dumps(record))
+        segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
+        print("Segment event: " + json.dumps(segment_event))
 
-    params = { 'campaignArn': os.environ['personalize_campaign_arn'] }
+        if 'anonymousId' in segment_event and 'userId' in segment_event and 'properties' in segment_event and 'sku' in segment_event["properties"]:
+            print("Calling Personalize.Record()")
+            userId = segment_event['userId']
+            properties = { "id": segment_event["properties"]["sku"] }
+            personalize_events.record(
+                trackingId = os.environ['personalize_tracking_id'],
+                userId = userId,
+                sessionId = segment_event['anonymousId'],
+                eventList = [
+                    {
+                        "eventId": segment_event['messageId'],
+                        "sentAt": int(dp.parse(segment_event['timestamp']).strftime('%s')),
+                        "eventType": segment_event['event'],
+                        "properties": json.dumps(properties)
+                    }
+                ]
+            )
 
-    userId = ''
-    if 'userId' in event['queryStringParameters']:
-        userId = event['queryStringParameters']['userId']
-        params['userId'] = userId
-    if 'itemId' in event['queryStringParameters']:
-        params['itemId'] = event['queryStringParameters']['itemId']
-    if 'numResults' in event['queryStringParameters']:
-        params['numResults'] = int(event['queryStringParameters']['numResults'])
+            params = { 'campaignArn': os.environ['personalize_campaign_arn'], 'userId': userId }
 
-    recommendations = personalize.get_recommendations(**params)
+            recommendations = personalize_runtime.get_recommendations(**params)
 
-    # For this version of the function we're just returning the recommendations from
-    # Personalize directly back to the caller.
-    print(recommendations)
+            userTraits = get_user_traits(userId)
 
-    '''
-    TODO:
+            print(userTraits)
 
-    1. Call Segment Profile API to fetch customer profile.
-    2. Filter recommendations from Personalize against purchase history attached to customer profile as trait.
-    3. Update return statement below to return filtered recommendations.
-    '''
+            if 'purchased_products' in userTraits:
+                # Remove already purchased products from the recommended traits
+                recommended_items = list(set(userTraits['purchased_products']).symmetric_difference(recommended_items))
 
-    userTraits = get_user_traits(userId)
+            print(recommended_items)
 
-    print(user_traits)
+            # Set the updated recommendations on the user's profile
+            set_user_traits(userId, { 'recommended_products' : recommended_items })
 
-    if 'purchased_products' in user_traits:
-        # Remove already purchased products from the recommended traits
-        recommended_items = list(set(user_traits['purchased_products']).symmetric_difference(recommended_items))
-
-    print(recommended_items)
-
-    # Set the updated recommendations on the user's profile
-    set_user_traits(test_user_id, { 'recommended_products' : recommended_items })
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps(recommended_items)
-    }
+        else:
+            print("Segment event does not contain required fields (anonymousId, sku, and userId)")

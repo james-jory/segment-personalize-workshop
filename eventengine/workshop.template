@@ -245,6 +245,20 @@
                                     ]]
                                 }
                             ]
+                        },
+                        {
+                            "Sid": "AllowSegmentUser",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "arn:aws:iam::107630771604:user/s3-copy"
+                            },
+                            "Action": "s3:PutObject",
+                            "Resource": {
+                                "Fn::Join": [ "", [
+                                    { "Fn::GetAtt": [ "PersonalizeDataBucket", "Arn" ] },
+                                    "/segment-logs/*"
+                                ]]
+                            }
                         }
                     ]
                 }
