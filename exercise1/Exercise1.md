@@ -2,7 +2,8 @@
 
 The ability of machine learning models to make effective recommendations is heavily influenced by the quantity and quality of data input during the training process. For most personalization ML solutions, training data typically comes from clickstream data collected from websites, mobile applications, and other online & offline channels where end-users are interacting with items for which we wish to make recommendations. Examples of clickstream events include viewing items, adding items to a list or cart, and of course purchasing items. Although an Amazon Personalize Campaign can be started with just new clickstream data going forward, the initial quality of the recommendations will not be as high as a model that has been trained on recent historical data.
 
-One of Segment's core capabilities is the ability collect
+One of Segment's core capabilities is the ability collect semantic events and properties and to aggregate those properties into user profiles using Personas for later use in marketing and analytics tools.
+
 In this exercise we will walk through the process required to take historical clickstream data collected by Segment to train a model in Amazon Personalize. The advantage of bootstrapping Personalize with historical clickstream data is that you will start with a model that has the benefit of This will Segment provides the ability to send event data from one or more data sources configured in your Segment account to several AWS services including S3, Kinesis, and Redshift. Since the raw format, fields, and event types in the Segment event data cannot be directly uploaded to Amazon Personalize for model training, this exercise will guide you through the process of transforming the data into the format expected by Personalize. We will start with raw event data that has already aggregated into a single JSON file in a S3 bucket. We will use AWS Glue to create an ETL (extract, transform, load) job that will take the JSON file, apply filtering and field mapping to each JSON event, and write the output back to S3 as a CSV file.
 
 ## Setup Environment
@@ -30,7 +31,7 @@ aws s3 cp s3://segment-personalize-data/raw-events/events.json s3://personalize-
      - Leave everything else the same and click Next.
      - On the "Connections" step just click "Save job and edit script" since we are not accessing data in a database.
      - Open the file "GlueETL.py" and copy its contents to your clipboard.
-     - Paste the file contents into the Glue script editor window. 
+     - Paste the file contents into the Glue script editor window.
      - Click "Save" to save the job script.
      - Click "Run job" and expand the "Security configuration, script libraries, and job parameters" options on the run dialog.
      - At the bottom we will add two "Job parameters".
