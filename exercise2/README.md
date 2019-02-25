@@ -19,7 +19,7 @@ You can configure Amazon Personalize to upload training data on a pre-determined
 
 ### What You'll Be Building
 
-In the previous [exercise](../exercise1/) we learned how to use AWS Glue to take the raw event data written to S3 by Segment and transform it into the format required by Personalize. In this exercise we will pick up where we left off and learn how to create a dataset group in Personalize, define the schema for the event data in our CSV, 
+In the previous [exercise](../exercise1/) we learned how to use AWS Glue to take the raw event data written to S3 by Segment and transform it into the format required by Personalize. In this exercise we will pick up where we left off and learn how to create a dataset group and campaign in Personalize by performing the following steps.
 
 * Create a dataset group in Personalize
 * Define the schema representing the event data in our CSV

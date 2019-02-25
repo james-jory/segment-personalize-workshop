@@ -30,7 +30,7 @@ In this [exercise](exercise2/) we will pick up where we left off in the prior ex
 
 ## [Exercise 3](exercise3/) - Real-Time Data Collection & Recommendation Optimization
 
-In this [exercise](exercise3/) we will build the components necessary to ingest clickstream data from Segment using an Amazon Kinesis Data Stream and Amazon Lambda and update Personalize in real-time. This will allow Personalize to learn from customer interactions that are being collected by Segment to improve its recommendations. 
+In this [exercise](exercise3/) we will build the components necessary to ingest clickstream data from Segment using an Amazon Kinesis Data Stream and Amazon Lambda and update Personalize in real-time. This will allow Personalize to learn from customer interactions that are being collected by Segment to improve its recommendations.
 
 ## [Exercise 4](exercise4/) - Activating Recommendations using Segment Personas
 
