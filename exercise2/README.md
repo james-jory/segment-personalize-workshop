@@ -149,4 +149,20 @@ Click the "Finish" button to create your Solution. This process can take several
 
 ![Personalize Solution Creation in Progress](images/PersonalizeSolutionInProgress.png)
 
+## Part 3 - Create Personalize Campaign
+
+A deployed solution is known as a campaign, and is able to make recommendations for your users. To deploy a solution, you create a campaign in the console or by calling the CreateCampaign API. You can choose which version of the solution to use. By default, a campaign uses the latest version of a solution.
+
+From the Dataset Group Dashboard, click the "Create new campaign" button.
+
+![Personalize Create Campaign](images/PersonalizeCreateCampaignDash.png)
+
+Enter the name for your campaign as `segment-workshop-campaign`. __You must use this name in order for subsequent exercises in this workshop to function properly__. Select the solution your created above and click "Create campaign".
+
+![Personalize Create Campaign Settings](images/PersonalizeCreateCampaign.png)
+
+Personalize will start creating your new campaign. This process can take several minutes.
+
+![Personalize Campaign Creating](images/PersonalizeCampaignCreating.png)
+
 In the [next exercise](../exercise3) we will build a real-time clickstream ingestion pipeline that accepts events from Segment to a Kinesis Stream, processed by a Lambda function, and written to a Personalize Event Tracker.

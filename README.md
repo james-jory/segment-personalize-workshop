@@ -26,9 +26,9 @@ If you are following this workshop on your own (i.e. in your own personal AWS ac
 
 The focus of this [exercise](exercise1/) is to learn how to use historical clickstream data from Segment to train or bootstrap a machine learning model in Personalize. We will walk through the process of configuring Segment to write clickstream data to an Amazon Simple Storage Service (S3) bucket. Then you will build an AWS Glue Job that will transform and filter the raw data written to S3 into a format that can be uploaded into Personalize. In addition, we will learn how to use Amazon Athena to query and explore this data directly from S3.
 
-## [Exercise 2](exercise2/) - Create Personalize Dataset Group and Solution
+## [Exercise 2](exercise2/) - Create Personalize Dataset Group, Solution, and Campaign
 
-In this [exercise](exercise2/) we will pick up where we left off in the prior exercise by uploading the transformed data in S3 into a Personalize Dataset Group. Then you will create a Personalize Solution based on this data. A solution is the term Amazon Personalize uses for a trained machine learning model that makes recommendations to customers. Creating a solution entails optimizing the model to deliver the best results for a specific business need. Amazon Personalize uses "recipes" to create these personalized solutions.
+In this [exercise](exercise2/) we will pick up where we left off in the prior exercise by uploading the transformed data from S3 into a Personalize Dataset Group. Then you will create a Personalize Solution based on this data. A solution is the term Amazon Personalize uses for a trained machine learning model. Creating a solution entails optimizing the model to deliver the best results for a specific business need. Amazon Personalize uses "recipes" to create these personalized solutions. We will wrap up this exercise by creating a campaign. A deployed solution is known as a campaign, and is able to make recommendations for your users.
 
 ## [Exercise 3](exercise3/) - Real-Time Data Collection & Recommendation Optimization
 
