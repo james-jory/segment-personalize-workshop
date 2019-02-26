@@ -72,8 +72,14 @@ def lambda_handler(event, context):
         segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
         print("Segment event: " + json.dumps(segment_event))
 
-        # TODO: Add check for the three workshop events here
-        if 'anonymousId' in segment_event and 'userId' in segment_event and 'properties' in segment_event and 'sku' in segment_event["properties"]:
+        # For the Personalize workshop, we really only care about these events
+        supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
+        if ('anonymousId' in segment_event and
+            'userId' in segment_event and
+            'properties' in segment_event and
+            'sku' in segment_event["properties"] and
+            'event' in segment_event and
+            segment_event['event'] in supported_events):
             print("Calling Personalize.Record()")
             userId = segment_event['userId']
             properties = { "id": segment_event["properties"]["sku"] }
