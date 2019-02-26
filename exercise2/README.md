@@ -1,5 +1,5 @@
 
-# Exercise 2 - Create Personalize Dataset Group and Solution
+# Exercise 2 - Create Personalize Dataset Group, Solution, and Campaign
 
 ## Overview
 
