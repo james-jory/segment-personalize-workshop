@@ -24,6 +24,8 @@ git clone https://github.com/james-jory/segment-personalize-workshop.git
 
 ## Part 1 - Create API Endpoint & Lambda Function
 
+![Exercise 4 Part 1 Architecture](images/Architecture-Exercise4-Part1.png)
+
 First we will create a Lambda function that will be called by an API Gateway endpoint. In the AWS console for the account you've been assigned for the workshop, browse to the Lambda service page. Click the "Create function" button to create a new function.
 
 ![Lambda Create Function](images/LambdaCreateFunction.png)
@@ -34,7 +36,7 @@ Enter a name for your function, specify Python 3.7 as the runtime, and select th
 
 Scroll down to the "Function code" panel. The source code for the function has already been written and is provided in this repository at [recommendations/lambda_function.py](recommendations/lambda_function.py). Open this file in a new browser tab/window, copy it to your clipboard, and paste it into the source code editor for our Lambda function as show below. Click the "Save" button at the top of the page when you're done.
 
-![Lambda Source](images/LambdaRecEndpointSource.png)
+![Lambda Source](images/LambdaRecFunctionSource.png)
 
 Next we need to register the Lambda Layer to wire up the Personalize API with the Python SDK like we did for our previous function. Click on "Layers" below the function name in the Lambda Designer panel. Then click the "Add a layer" button.
 
@@ -80,8 +82,12 @@ This API framework and function provides the foundation for enhancing our functi
 
 ## Part 2 - Filtering Recommendations using Customer Profile Traits
 
+![Exercise 4 Part 2 Architecture](images/Architecture-Exercise4-Part2.png)
+
 TODO: content for filtering recommendations from purchase history attached to customer profile.
 
 ## Part 3 - Activating Recommendations Across Segment Integrations
+
+![Exercise 4 Part 3 Architecture](images/Architecture-Exercise4-Part3.png)
 
 TODO: content for updating traits on customer profile with results of filtered recommendations.

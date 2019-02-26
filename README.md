@@ -6,7 +6,9 @@
 
 Machine learning is being increasingly used to improve customer engagement by powering personalized product and content recommendations, tailored search results, and targeted marketing promotions. However, developing the machine-learning capabilities necessary to produce these sophisticated recommendation systems has been beyond the reach of most organizations today due to the complexity of developing machine learning functionality. Amazon Personalize allows developers with no prior machine learning experience to easily build sophisticated personalization capabilities into their applications, using machine learning technology perfected from years of use on Amazon.com.
 
-This repository includes the content, instructions, test data, and code for a workshop that is intended to guide attendees through the process of integrating Segment with Amazon Personalize. The workshop will teach attendees how to use Segment to collect and send data to Amazon Personalize, where it can be used to make real-time item recommendations, tailored search results, and targeted marketing promotions. The workshop will include hands-on exercises for data collection and analytics, training machine learning models, and activating insights for personalized recommendations in a sample application.
+![Segment + Amazon Personalize Architecture](images/SegmentPersonalizeArchitecture.png)
+
+This project includes the content, instructions, test data, and code for a workshop that is intended to guide attendees through the process of integrating Segment with Amazon Personalize. The workshop will teach attendees how to use Segment to collect and send data to Amazon Personalize, where it can be used to make real-time item recommendations, tailored search results, and targeted marketing promotions. The workshop will include hands-on exercises for data collection and analytics, training machine learning models, and activating insights for personalized recommendations in a sample application.
 
 Attendees will leave with the skillsets for how to unlock real-time personalization and recommendations using the same technology used at Amazon.com.
 

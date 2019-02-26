@@ -16,6 +16,8 @@ We will start with raw event data that has already aggregated into a single JSON
 
 ### What You'll Be Building
 
+![Exercise 1 Architecture](images/Architecture-Exercise1.png)
+
 In this exercise we will walk through the process required to take the raw historical clickstream data collected by Segment to train a model in Amazon Personalize. The advantage of bootstrapping Personalize with historical clickstream data is that you will start with a model that has the benefit of past events to make more accurate recommendations. Segment provides the ability to push clickstream data to the following locations in your AWS account.
 
 * S3 bucket

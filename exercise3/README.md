@@ -10,6 +10,8 @@ The event ingestion SDK includes a JavaScript library for recording events from 
 
 ### What You'll Be Building
 
+![Exercise 3 Architecture](images/Architecture-Exercise3.png)
+
 In this exercise we will be leveraing the data collection capabilities of Segment to stream clickstream data to a Kinesis Stream in real-time. A Lambda function will consume events from this stream, transform the events it consumes into the parameters required by Personalize, and then update Personalize.
 
 * Create Kinesis Stream
