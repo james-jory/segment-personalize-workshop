@@ -86,11 +86,13 @@ def lambda_handler(event, context):
     if 'numResults' in event['queryStringParameters']:
         params['numResults'] = int(event['queryStringParameters']['numResults'])
 
-    recommendations = personalize.get_recommendations(**params)
+    response = personalize.get_recommendations(**params)
+
+    recommended_items = [d['itemId'] for d in response['itemList'] if 'itemId' in d]
 
     # For this version of the function we're just returning the recommendations from
     # Personalize directly back to the caller.
-    print(recommendations)
+    print(recommended_items)
 
     '''
     TODO:
@@ -102,11 +104,11 @@ def lambda_handler(event, context):
 
     userTraits = get_user_traits(userId)
 
-    print(user_traits)
+    print(userTraits)
 
     if 'purchased_products' in user_traits:
         # Remove already purchased products from the recommended traits
-        recommended_items = list(set(user_traits['purchased_products']).symmetric_difference(recommended_items))
+        recommended_items = list(set(userTraits['purchased_products']).symmetric_difference(recommended_items))
 
     print(recommended_items)
 

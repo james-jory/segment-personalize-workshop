@@ -5,9 +5,9 @@ import boto3
 personas_endpoint_url = "https://profiles.segment.com/v1/spaces"
 connections_endpoint_url = "https://api.segment.io/v1"
 
-personas_api_key = 'IFtRJz8K4j9t5vmhcwCNWkTvyn6YnPZ8Vj8VDeTo-ZyOYk4tVYoREj5ZzFwW5HxvIttiWTw5LEpWjObEvkOsjI9gefoX6hsnL4DjDlDbK7W_rFVS3i2xf2ei9bCzXdyqNOqa8lFnfuffrtIvx8XBIh5fTRwPl_8nLWYnmgeXRjbuFIS-VzyiPMSW1kN-ZfOs4FnKTFSH5jZu'
-personas_workspace_id = 'JjRlkVUAG5'
-connections_source_api_key = '28w4xmjGwnwJuMEvrZwEJ7w9m5EDXjRl'
+personas_api_key = 'Rpn703c-OOJKr5gDTuou7ViQlroTxOgre_6OfChK_unKQalwpw-imDRZQivLq8sKjC2M0ngckQfLAM6KMAy5QckDPWOuhMxJC0H5Ymu4B-3HpePBgrkHmneSgchdG1LfRgcLJQZlcJYpaDXrPGDXUKdcuUUmJjDS-cht9Y-3SNf7O0uqyx7dPRbUzzVzzCiSuC4F4stVdt-6'
+personas_workspace_id = 'DghtLzq1cc'
+connections_source_api_key = 'SKDzoDFy36OqLdnV1dttMTsmKNrjY9TA'
 campaign_arn = 'arn:aws:personalize:us-west-2:816059824474:campaign/flashgear-recs'
 
 def api_get(url, key):
@@ -56,7 +56,7 @@ def set_user_traits(user_id, traits):
     print(json.dumps(message))
     api_post(formatted_url, connections_source_api_key, message)
 
-test_user_id = '6828041333'
+test_user_id = '6378468709'
 api_params = { 'service_name': 'personalize-runtime', 'region_name': 'us-west-2', 'endpoint_url': 'https://personalize-runtime.us-west-2.amazonaws.com' }
 personalize = boto3.client(**api_params)
 params = { 'campaignArn': campaign_arn, 'userId': test_user_id }

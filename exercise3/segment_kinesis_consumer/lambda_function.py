@@ -6,14 +6,14 @@ import dateutil.parser as dp
 import init_personalize_api as api_helper
 
 def lambda_handler(event, context):
-    """ Consumes events from the Kinesis Stream destination configured in Segment. 
+    """ Consumes events from the Kinesis Stream destination configured in Segment.
     See the Segment documentation for how to setup Kinesis: https://segment.com/docs/destinations/amazon-kinesis/
     """
 
     if not 'personalize_tracking_id' in os.environ:
         raise Exception('personalize_tracking_id not configured as environment variable')
 
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully 
+    # Initialize Personalize API (this is temporarily needed until Personalize is fully
     # integrated into boto3). Leverages Lambda Layer.
     api_helper.init()
 
@@ -26,7 +26,14 @@ def lambda_handler(event, context):
         segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
         print("Segment event: " + json.dumps(segment_event))
 
-        if 'anonymousId' in segment_event and 'userId' in segment_event and 'properties' in segment_event and 'sku' in segment_event["properties"]:
+        # For the Personalize workshop, we really only care about these events
+        supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
+        if ('anonymousId' in segment_event and
+            'userId' in segment_event and
+            'properties' in segment_event and
+            'sku' in segment_event["properties"] and
+            'event' in segment_event and
+            segment_event['event'] in supported_events):
             print("Calling Personalize.Record()")
             properties = { "id": segment_event["properties"]["sku"] }
             personalize_events.record(
