@@ -69,10 +69,6 @@ An Avro schema for our event data has already been written and can be found in [
     "namespace": "com.amazonaws.personalize.schema",
     "fields": [
         {
-            "name": "ANONYMOUS_ID",
-            "type": "string"
-        },
-        {
             "name": "USER_ID",
             "type": "string"
         },
@@ -85,10 +81,6 @@ An Avro schema for our event data has already been written and can be found in [
             "type": "string"
         },
         {
-            "name": "TIMESTAMP_ISO",
-            "type": "string"
-        },
-        {
             "name": "TIMESTAMP",
             "type": "long"
         }
@@ -97,7 +89,7 @@ An Avro schema for our event data has already been written and can be found in [
 }
 ```
 
-Let's review the schema in more detail. The required fields for the user-item interaction dataset schema are `USER_ID`, `ITEM_ID`, and `TIMESTAMP`. Additionally, optional reserved fields include EVENT_TYPE and EVENT_VALUE. In the [previous exercise](../exercise1) we mapped the `userId`, `properties.sku`, `timestamp` (transformed from ISO 8601 to UNIX time), and `event` from the raw event data from Segment to `USER_ID`, `ITEM_ID`, `TIMESTAMP`, and `EVENT_TYPE`, respectively. Although `ANONYMOUS_ID` and `TIMESTAMP_ISO` are included in our CSV and in our schema, they are not used.
+Let's review the schema in more detail. The required fields for the user-item interaction dataset schema are `USER_ID`, `ITEM_ID`, and `TIMESTAMP`. Additionally, optional reserved fields include EVENT_TYPE and EVENT_VALUE. In the [previous exercise](../exercise1) we mapped the `userId`, `properties.sku`, `timestamp` (transformed from ISO 8601 to UNIX time), and `event` from the raw event data from Segment to `USER_ID`, `ITEM_ID`, `TIMESTAMP`, and `EVENT_TYPE`, respectively. We are ignoring `ANONYMOUS_ID` and `TIMESTAMP_ISO` from our CSV since they are not needed.
 
 Copy the contents of Avro schema to your clipboard and paste it into the "Schema definition" editor (replacing the proposed schema). Click "Next" to save the schema and move to the next step.
 
