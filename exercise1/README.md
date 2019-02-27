@@ -35,6 +35,10 @@ If you haven't already cloned this repository to your local machine, do so now.
 git clone https://github.com/james-jory/segment-personalize-workshop.git
 ```
 
+Claim your Segment Workspace and Event Engine code:
+
+![Segment Workspaces](https://docs.google.com/spreadsheets/d/1SyEDxLmquN96tsv-dhrOhduRLilWjITQyCBXCcA73U4/edit?usp=sharing)
+
 ## Part 1 - Set up Your Segment Workspace
 
 Go to https://app.segment.com and log in as:
