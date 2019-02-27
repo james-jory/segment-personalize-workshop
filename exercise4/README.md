@@ -178,7 +178,7 @@ Your Lambda code should look something like this after this step:
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_12A58A92405C56E8DE968E6DE63B3BFED1BB822EB344A5A338801C8B717BCDEB_1551250573134_image.png)
 
 
-Next, let’s update the environment variables this lambda will need to work properly.
+Next, let’s update the environment variables this lambda will need to work properly.  Note that you will have to complete the configuration for the CampaignTracker in Exercise 3 for this configuration to work.
 
 First, we need the Personas API Key.  Open a new browser tab, and go to your Segment workspace. Click on Personas Orb > Settings > API Access tabs.  
 
