@@ -82,10 +82,13 @@ Once your source is configured, it will appear in your workspace like this:
 You will need to repeat these steps to configure three more sources.  One for Android, one for iOS, and one for your Personalize events.  
 
 Name your sources as follows:
+
+```
 website-prod
 android-prod
 ios-prod
 personas-events-source
+```
 
 For the web source, use the Javascript source type, for Android the Android source, for iOS the iOS source, and for the personas-events-source use the Python source type.
 
