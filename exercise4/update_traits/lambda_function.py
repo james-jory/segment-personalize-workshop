@@ -83,7 +83,7 @@ def lambda_handler(event, context):
             print("Calling Personalize.Record()")
             userId = segment_event['userId']
             properties = { "id": segment_event["properties"]["sku"] }
-            personalize_events.record(
+            personalize_events.put_events(
                 trackingId = os.environ['personalize_tracking_id'],
                 userId = userId,
                 sessionId = segment_event['anonymousId'],
