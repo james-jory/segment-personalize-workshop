@@ -17,9 +17,9 @@ from_date = sys.argv[1]
 # your Segment workspace.
 #
 
-web_write_key = 'ejFqTSwPOgweu4En904n5nkjGjUDJinG'
-android_write_key = 'dnsWQgTTnxdzlIRKLQzDaAETNiZMfh4y'
-ios_write_key = 'CcQRN5w8gwiqO7Cqz0R0haRPpqGLiZw6'
+web_write_key = ''
+android_write_key = ''
+ios_write_key = ''
 email_write_key = ''
 android_analytics = analytics.Client(android_write_key)
 web_analytics = analytics.Client(web_write_key)
