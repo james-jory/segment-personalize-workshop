@@ -74,7 +74,7 @@ Upload the sample raw dataset to the S3 bucket which has been created for you in
 3. Click on the bucket with a name like `personalize-data-...`.
 4. Create a folder called `raw-events` in this bucket.
 5. Click on the `raw-events` folder just created.
-6. Upload the file `data/raw-events/events.json.gz` to the `raw-events` folder.
+6. This repository already contains a compressed data file for you to upload. Upload the local file `data/raw-events/events.json.gz` in this repo to the `raw-events` folder in your S3 bucket.
 
 > If you're stepping through this workshop in your own personal AWS account, you will need to create an S3 bucket yourself that has the [necessary bucket policy](https://docs.aws.amazon.com/personalize/latest/dg/data-prep-upload-s3.html) allowing Personalize access to your bucket. Alternatively, you can apply the CloudFormation template [eventengine/workshop.template](eventengine/workshop.template) within your account to have these resources created for you.
 
@@ -171,13 +171,13 @@ job.commit()
 
 ### Run AWS Glue ETL Job
 
-With our ETL Job script created and saved, it's time to run the job to create the CSV needed to train a Personalize Solution.
+With our ETL Job script created and saved, it's time to run the job to create the CSV needed to train a Personalize Solution. Before going any further, open another AWS console browser tab/window by right-clicking on the AWS logo in the upper left corner of the page and select "Open Link in New Tab" (or Window).
 
 While still in the Glue service console and the job listed, click the "Run job" button. This will cause the Parameters panel to display. Click the "Security configuration, script libraries, and job parameters" section header to cause the job parameters fields to be displayed.
 
 ![Glue Job Parameters](images/GlueRunJobDialog.png)
 
-Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. The order they are specified does not matter.
+Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. You copy the bucket name to your clipboard from the S3 service page in the tab/window you opened above. The order they are specified does not matter.
 
 | Key                  | Value                                          |
 | -------------------- | ---------------------------------------------- |
@@ -242,7 +242,7 @@ Make sure your database is selected in the left panel and you should see the "tr
 
 ![Athena Database and Table](images/AthenaDbAndTable.png)
 
-The "New query 1" tab should be pre-populated with the following query.
+Enter the following SQL query in the "New query 1" tab.
 
 ```sql
 SELECT * FROM "segmentdata"."transformed" limit 10;

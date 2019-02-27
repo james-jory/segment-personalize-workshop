@@ -17,7 +17,7 @@ In this exercise we will be leveraing the data collection capabilities of Segmen
 * Create Kinesis Stream
 * Create and configure a Kinesis Stream destination in Segment
 * Send test events through the destination in Segment to Kinesis
-* Create Lambda function that consumes events from Kinesis and writes to Personalize using the [Record](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_Record.html) API
+* Create Lambda function that consumes events from Kinesis and writes to Personalize using the [PutEvents](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) API
 
 ### Exercise Preparation
 
@@ -89,7 +89,7 @@ In your Segment account, click on the Event Tester for the Kinesis Destination j
   "type": "track",
   "email": "test@example.org",
   "properties": {
-    "skue": "ocean-blue-shirt",
+    "sku": "ocean-blue-shirt",
     "property2": "test",
     "property3": true
   },
@@ -136,14 +136,14 @@ import dateutil.parser as dp
 import init_personalize_api as api_helper
 
 def lambda_handler(event, context):
-    """ Consumes events from the Kinesis Stream destination configured in Segment. 
+    """ Consumes events from the Kinesis Stream destination configured in Segment.
     See the Segment documentation for how to setup Kinesis: https://segment.com/docs/destinations/amazon-kinesis/
     """
 
     if not 'personalize_tracking_id' in os.environ:
         raise Exception('personalize_tracking_id not configured as environment variable')
 
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully 
+    # Initialize Personalize API (this is temporarily needed until Personalize is fully
     # integrated into boto3). Leverages Lambda Layer.
     api_helper.init()
 
@@ -156,10 +156,17 @@ def lambda_handler(event, context):
         segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
         print("Segment event: " + json.dumps(segment_event))
 
-        if 'anonymousId' in segment_event and 'userId' in segment_event and 'properties' in segment_event and 'sku' in segment_event["properties"]:
-            print("Calling Personalize.Record()")
+        # For the Personalize workshop, we really only care about these events
+        supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
+        if ('anonymousId' in segment_event and
+            'userId' in segment_event and
+            'properties' in segment_event and
+            'sku' in segment_event["properties"] and
+            'event' in segment_event and
+            segment_event['event'] in supported_events):
+            print("Calling Personalize.put_events()")
             properties = { "id": segment_event["properties"]["sku"] }
-            personalize_events.record(
+            personalize_events.put_events(
                 trackingId = os.environ['personalize_tracking_id'],
                 userId = segment_event['userId'],
                 sessionId = segment_event['anonymousId'],
@@ -226,10 +233,10 @@ Select the layer we just added and the latest version. Click "Add" to add the la
 
 ### Wire-up Personalize Event Tracker
 
-Another dependency in our function is the ability to call the Personalize [Record API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_Record.html) endpoint as shown in the following excerpt.
+Another dependency in our function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint as shown in the following excerpt.
 
 ```python
-personalize_events.record(
+personalize_events.put_events(
     trackingId = os.environ['personalize_tracking_id'],
     userId = segment_event['userId'],
     sessionId = segment_event['anonymousId'],

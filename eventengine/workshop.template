@@ -174,7 +174,7 @@
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                        "personalize:Record"
+                                        "personalize:*"
                                     ],
                                     "Resource": [
                                         "*",

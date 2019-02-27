@@ -34,9 +34,9 @@ def lambda_handler(event, context):
             'sku' in segment_event["properties"] and
             'event' in segment_event and
             segment_event['event'] in supported_events):
-            print("Calling Personalize.Record()")
+            print("Calling Personalize.put_events()")
             properties = { "id": segment_event["properties"]["sku"] }
-            personalize_events.record(
+            personalize_events.put_events(
                 trackingId = os.environ['personalize_tracking_id'],
                 userId = segment_event['userId'],
                 sessionId = segment_event['anonymousId'],

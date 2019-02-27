@@ -22,8 +22,14 @@ print("Input file: ", args['S3_JSON_INPUT_PATH'])
 print("Input file total record count: ", datasource0.count())
 
 # Filters the JSON documents that we want included in the output CSV
+supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
 def filter_function(dynamicRecord):
-	if dynamicRecord["properties"]["sku"] and dynamicRecord["userId"]:
+	if ('anonymousId' in dynamicRecord and
+			'userId' in dynamicRecord and
+			'properties' in dynamicRecord and
+			'sku' in dynamicRecord["properties"] and
+			'event' in dynamicRecord and
+			dynamicRecord['event'] in supported_events):
 		return True
 	else:
 		return False
