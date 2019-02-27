@@ -185,7 +185,9 @@ Add each write key to the appropriate variable entry in the script (you will not
 
 In your terminal, run the script:
 
+```
 python3 segment-event-generator.py 2019-02-26
+```
 
 This will generate two days worth of interaction data in your Segment instance.  You can see your events by clicking on each of your sources and looking at the Debugger view:
 
