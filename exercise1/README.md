@@ -25,7 +25,7 @@ In this exercise we will walk through the process required to take the raw histo
 * Kinesis Data Firehose
 * Redshift
 
-For this exercise we will walk you through how to setup an S3 destination in your Segment account. In the interest of time, though, we will provide a pre-made test dataset that you will upload to S3 yourself. Then you will use AWS Glue to create an ETL (extract, transform, load) Job that will filter and transform the raw JSON file into the format required by Personalize. The output file will be written back to S3. Finally, you will learn how to use Amazon Athena to query and visualize the data in the transformed file directly from S3. 
+For this exercise we will walk you through how to setup an S3 destination in your Segment account. In the interest of time, though, we will provide a pre-made test dataset that you will upload to S3 yourself. Then you will use AWS Glue to create an ETL (extract, transform, load) Job that will filter and transform the raw JSON file into the format required by Personalize. The output file will be written back to S3. Finally, you will learn how to use Amazon Athena to query and visualize the data in the transformed file directly from S3.
 
 ### Exercise Preparation
 
@@ -35,7 +35,92 @@ If you haven't already cloned this repository to your local machine, do so now.
 git clone https://github.com/james-jory/segment-personalize-workshop.git
 ```
 
-## Part 1 - Create S3 Destination in Segment
+## Part 1 - Set up Your Segment Workspace
+
+Go to https://app.segment.com and log in as:
+
+
+    username: igor+awsmlworkshop@segment.com
+    password: <will be on the whiteboard>
+
+Select your workspace.  For this workshop, you will need to have a Segment Business Tier workspace that has Personas provisioned.  
+
+If you are reading this document after the workshop, please contact your Segment sales representative to get set up with a demo workspace with Personas and Business Tier.
+
+## Part 2 - Create Segment Sources
+****
+Segment Sources allow you to collect semantic events as your users interact with your web sites, mobile applications, or server-side applications.  For this workshop, you will set up sources for a web application, an Android application, and iOS mobile application.  We will also create a source that will be used to send recommendations from Personalize to user profiles in Segment.
+
+Your initial Segment workspace will look like this:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551126460468_image.png)
+
+
+You will need to add four sources, using the ‘Add Source’ button in the screen shot above.  To set up a source:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551126918810_image.png)
+
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551126938657_image.png)
+
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551126965261_image.png)
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127036032_image.png)
+
+
+Once your source is configured, it will appear in your workspace like this:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127061361_image.png)
+
+
+You will need to repeat these steps to configure three more sources.  One for Android, one for iOS, and one for your Personalize events.  
+
+Name your sources as follows:
+website-prod
+android-prod
+ios-prod
+personas-events-source
+
+For the web source, use the Javascript source type, for Android the Android source, for iOS the iOS source, and for the personas-events-source use the Python source type.
+
+## Part 3 - Set up Segment Personas
+
+Personas will use the events that your collect from your user interactions to create individual user profiles.  This will allow you and your marketing teams to group users into audiences.  Later, you will be able to define the destinations to which you will be able to send user definitions and traits by setting up destinations in Personas.  You will also be able to add product recommendations from Personalize to each user profile in Personas.
+
+After setting up your sources, your workspace should look something like this:
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127589771_image.png)
+
+
+Click on the Personas Orb on the left hand side of your screen, and you will be redirected to the Personas setup wizard.  This will allow you to set up Personas so that it can receive events from the sources which you just configured.
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127707826_image.png)
+
+
+Click ‘Get Started’ and enable all of the sources you just created:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127784671_image.png)
+
+
+Then click ‘Review’:
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551127817276_image.png)
+
+
+And then ‘Enable Personas.’
+
+You now have an event channel from your applications, and a way to collect identity information about individual users.  Let’s set up Segment so that this data can be passed on to Personalize via an S3 bucket for your initial training set.
+
+
+## Part 4 - Create S3 Destination in Segment
 
 Although we won't be testing pushing data from Segment to S3 in the workshop due to time limitations, we will walk through how to configure an S3 destination in Segment. Start by logging in to your Segment account and clicking "Destinations" in the left navigation. Then click the "Add Destination" button.
 
@@ -65,7 +150,49 @@ Detailed instructions for configuring an S3 destination can be found on Segment'
 
 As mentioned above, we won't be testing actually pushing data through the S3 destination in this workshop due to time limitations. Instead, we will upload a dataset in the next part.
 
-## Part 2 - Upload Raw Interaction Test Data to S3
+## Part 5 - Send Test Data Into Your Segment Workspace
+
+This step will pre-populate simulated event data into your Segment instance, your S3 bucket, and Personas.  This will be needed in later steps when configuring Personalize to send recommendations to Personas and your marketing tools.
+
+Because events are synchronized from Segment to S3 on a batch basis, we will also give you a pre-populated initial training set to save time, in the next step.  You will need some data to be populated in Segment however, since this will allow you to create recommendations based on (simulated) user activity.
+
+Open the segment-event-generator.py file in the ./data folder of the workshop project.
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142493005_image.png)
+
+
+Then in your Segment workspace, get the write keys for the web, android, and ios sources you created earlier.  You can get these by clicking on each source.
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142616735_image.png)
+
+
+The write key for the source is in the next screen:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142716860_image.png)
+
+
+Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142493005_image.png)
+
+
+In your terminal, run the script:
+
+python3 segment-event-generator.py 2019-02-26
+
+This will generate two days worth of interaction data in your Segment instance.  You can see your events by clicking on each of your sources and looking at the Debugger view:
+
+
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142994936_image.png)
+
+
+This view shows the last 50 real time events for that source.  If you have events in all of your sources, you are ready to go to the next step.
+
+## Part 6 - Upload Raw Interaction Test Data to S3
 
 Upload the sample raw dataset to the S3 bucket which has been created for you in the AWS-provided workshop account. The S3 bucket name will be in the format `personalize-data-ACCOUNT_ID` where ACCOUNT_ID is the ID for the AWS account that you're using for the workshop.
 
@@ -78,7 +205,7 @@ Upload the sample raw dataset to the S3 bucket which has been created for you in
 
 > If you're stepping through this workshop in your own personal AWS account, you will need to create an S3 bucket yourself that has the [necessary bucket policy](https://docs.aws.amazon.com/personalize/latest/dg/data-prep-upload-s3.html) allowing Personalize access to your bucket. Alternatively, you can apply the CloudFormation template [eventengine/workshop.template](eventengine/workshop.template) within your account to have these resources created for you.
 
-## Part 3 - Data Preparation
+## Part 7 - Data Preparation
 
 Since the raw format, fields, and event types in the Segment event data cannot be directly uploaded to Amazon Personalize for model training, this step will guide you through the process of transforming the data into the format expected by Personalize. We will start with raw event data that has already aggregated into a single JSON file which you uploaded to S3 in the previous step. We will use AWS Glue to create an ETL job that will take the JSON file, apply filtering and field mapping to each JSON event, and write the output back to S3 as a CSV file.
 
