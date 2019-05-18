@@ -13,20 +13,6 @@
     "uid":"personalize-2018-05-22"
   },
   "operations":{
-    "CreateAlgorithm":{
-      "name":"CreateAlgorithm",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"CreateAlgorithmRequest"},
-      "output":{"shape":"CreateAlgorithmResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceAlreadyExistsException"},
-        {"shape":"LimitExceededException"}
-      ]
-    },
     "CreateCampaign":{
       "name":"CreateCampaign",
       "http":{
@@ -104,51 +90,6 @@
       ],
       "idempotent":true
     },
-    "CreateFeatureExportJob":{
-      "name":"CreateFeatureExportJob",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"CreateFeatureExportJobRequest"},
-      "output":{"shape":"CreateFeatureExportJobResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceAlreadyExistsException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"LimitExceededException"}
-      ]
-    },
-    "CreateFeatureTransformation":{
-      "name":"CreateFeatureTransformation",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"CreateFeatureTransformationRequest"},
-      "output":{"shape":"CreateFeatureTransformationResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceAlreadyExistsException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"LimitExceededException"}
-      ]
-    },
-    "CreateRecipe":{
-      "name":"CreateRecipe",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"CreateRecipeRequest"},
-      "output":{"shape":"CreateRecipeResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceAlreadyExistsException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"LimitExceededException"}
-      ]
-    },
     "CreateSchema":{
       "name":"CreateSchema",
       "http":{
@@ -179,19 +120,18 @@
         {"shape":"LimitExceededException"}
       ]
     },
-    "DeleteAlgorithm":{
-      "name":"DeleteAlgorithm",
+    "CreateSolutionVersion":{
+      "name":"CreateSolutionVersion",
       "http":{
         "method":"POST",
         "requestUri":"/"
       },
-      "input":{"shape":"DeleteAlgorithmRequest"},
+      "input":{"shape":"CreateSolutionVersionRequest"},
+      "output":{"shape":"CreateSolutionVersionResponse"},
       "errors":[
         {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"ResourceInUseException"}
-      ],
-      "idempotent":true
+        {"shape":"ResourceNotFoundException"}
+      ]
     },
     "DeleteCampaign":{
       "name":"DeleteCampaign",
@@ -235,20 +175,6 @@
       ],
       "idempotent":true
     },
-    "DeleteDatasetImportJob":{
-      "name":"DeleteDatasetImportJob",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DeleteDatasetImportJobRequest"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"ResourceInUseException"}
-      ],
-      "idempotent":true
-    },
     "DeleteEventTracker":{
       "name":"DeleteEventTracker",
       "http":{
@@ -256,34 +182,6 @@
         "requestUri":"/"
       },
       "input":{"shape":"DeleteEventTrackerRequest"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"ResourceInUseException"}
-      ],
-      "idempotent":true
-    },
-    "DeleteFeatureTransformation":{
-      "name":"DeleteFeatureTransformation",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DeleteFeatureTransformationRequest"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"},
-        {"shape":"ResourceInUseException"}
-      ],
-      "idempotent":true
-    },
-    "DeleteRecipe":{
-      "name":"DeleteRecipe",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DeleteRecipeRequest"},
       "errors":[
         {"shape":"InvalidInputException"},
         {"shape":"ResourceNotFoundException"},
@@ -389,20 +287,6 @@
       ],
       "idempotent":true
     },
-    "DescribeDatasetImportJobRun":{
-      "name":"DescribeDatasetImportJobRun",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DescribeDatasetImportJobRunRequest"},
-      "output":{"shape":"DescribeDatasetImportJobRunResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ],
-      "idempotent":true
-    },
     "DescribeEventTracker":{
       "name":"DescribeEventTracker",
       "http":{
@@ -411,20 +295,6 @@
       },
       "input":{"shape":"DescribeEventTrackerRequest"},
       "output":{"shape":"DescribeEventTrackerResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ],
-      "idempotent":true
-    },
-    "DescribeFeatureExportJob":{
-      "name":"DescribeFeatureExportJob",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"DescribeFeatureExportJobRequest"},
-      "output":{"shape":"DescribeFeatureExportJobResponse"},
       "errors":[
         {"shape":"InvalidInputException"},
         {"shape":"ResourceNotFoundException"}
@@ -501,14 +371,14 @@
       ],
       "idempotent":true
     },
-    "GetMetrics":{
-      "name":"GetMetrics",
+    "GetSolutionMetrics":{
+      "name":"GetSolutionMetrics",
       "http":{
         "method":"POST",
         "requestUri":"/"
       },
-      "input":{"shape":"GetMetricsRequest"},
-      "output":{"shape":"GetMetricsResponse"},
+      "input":{"shape":"GetSolutionMetricsRequest"},
+      "output":{"shape":"GetSolutionMetricsResponse"},
       "errors":[
         {"shape":"InvalidInputException"},
         {"shape":"ResourceNotFoundException"}
@@ -537,21 +407,6 @@
       "input":{"shape":"ListDatasetGroupsRequest"},
       "output":{"shape":"ListDatasetGroupsResponse"},
       "errors":[
-        {"shape":"InvalidNextTokenException"}
-      ],
-      "idempotent":true
-    },
-    "ListDatasetImportJobRuns":{
-      "name":"ListDatasetImportJobRuns",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"ListDatasetImportJobRunsRequest"},
-      "output":{"shape":"ListDatasetImportJobRunsResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"},
         {"shape":"InvalidNextTokenException"}
       ],
       "idempotent":true
@@ -594,19 +449,6 @@
       },
       "input":{"shape":"ListEventTrackersRequest"},
       "output":{"shape":"ListEventTrackersResponse"},
-      "errors":[
-        {"shape":"InvalidNextTokenException"}
-      ],
-      "idempotent":true
-    },
-    "ListFeatureExportJobs":{
-      "name":"ListFeatureExportJobs",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"ListFeatureExportJobsRequest"},
-      "output":{"shape":"ListFeatureExportJobsResponse"},
       "errors":[
         {"shape":"InvalidNextTokenException"}
       ],
@@ -666,32 +508,6 @@
       ],
       "idempotent":true
     },
-    "RetrainSolution":{
-      "name":"RetrainSolution",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"RetrainSolutionRequest"},
-      "output":{"shape":"RetrainSolutionResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
-    },
-    "UpdateAlgorithm":{
-      "name":"UpdateAlgorithm",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateAlgorithmRequest"},
-      "output":{"shape":"UpdateAlgorithmResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
-    },
     "UpdateCampaign":{
       "name":"UpdateCampaign",
       "http":{
@@ -720,58 +536,6 @@
         {"shape":"ResourceInUseException"}
       ],
       "idempotent":true
-    },
-    "UpdateDatasetImportJob":{
-      "name":"UpdateDatasetImportJob",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateDatasetImportJobRequest"},
-      "output":{"shape":"UpdateDatasetImportJobResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
-    },
-    "UpdateFeatureTransformation":{
-      "name":"UpdateFeatureTransformation",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateFeatureTransformationRequest"},
-      "output":{"shape":"UpdateFeatureTransformationResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
-    },
-    "UpdateRecipe":{
-      "name":"UpdateRecipe",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateRecipeRequest"},
-      "output":{"shape":"UpdateRecipeResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
-    },
-    "UpdateSolution":{
-      "name":"UpdateSolution",
-      "http":{
-        "method":"POST",
-        "requestUri":"/"
-      },
-      "input":{"shape":"UpdateSolutionRequest"},
-      "output":{"shape":"UpdateSolutionResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ]
     }
   },
   "shapes":{
@@ -833,10 +597,9 @@
       "type":"structure",
       "members":{
         "name":{"shape":"Name"},
-        "updateMode":{"shape":"UpdateMode"},
         "campaignArn":{"shape":"Arn"},
-        "solutionArn":{"shape":"Arn"},
         "solutionVersionArn":{"shape":"Arn"},
+        "minProvisionedTPS":{"shape":"TransactionsPerSecond"},
         "status":{"shape":"Status"},
         "failureReason":{"shape":"FailureReason"},
         "creationDateTime":{"shape":"Date"},
@@ -859,6 +622,7 @@
       "type":"structure",
       "members":{
         "solutionVersionArn":{"shape":"Arn"},
+        "minProvisionedTPS":{"shape":"TransactionsPerSecond"},
         "status":{"shape":"Status"},
         "failureReason":{"shape":"FailureReason"},
         "creationDateTime":{"shape":"Date"},
@@ -912,44 +676,17 @@
       "type":"double",
       "min":-1000000
     },
-    "CreateAlgorithmRequest":{
-      "type":"structure",
-      "required":[
-        "name",
-        "algorithmImage",
-        "defaultHyperParameters",
-        "defaultHyperParameterRanges",
-        "defaultResourceConfig",
-        "trainingInputMode",
-        "roleArn"
-      ],
-      "members":{
-        "name":{"shape":"Name"},
-        "algorithmImage":{"shape":"AlgorithmImage"},
-        "defaultHyperParameters":{"shape":"HyperParameters"},
-        "defaultHyperParameterRanges":{"shape":"DefaultHyperParameterRanges"},
-        "defaultResourceConfig":{"shape":"ResourceConfig"},
-        "trainingInputMode":{"shape":"TrainingInputMode"},
-        "roleArn":{"shape":"RoleArn"}
-      }
-    },
-    "CreateAlgorithmResponse":{
-      "type":"structure",
-      "members":{
-        "algorithmArn":{"shape":"Arn"}
-      }
-    },
     "CreateCampaignRequest":{
       "type":"structure",
       "required":[
         "name",
         "solutionVersionArn",
-        "updateMode"
+        "minProvisionedTPS"
       ],
       "members":{
         "name":{"shape":"Name"},
         "solutionVersionArn":{"shape":"Arn"},
-        "updateMode":{"shape":"UpdateMode"}
+        "minProvisionedTPS":{"shape":"TransactionsPerSecond"}
       }
     },
     "CreateCampaignResponse":{
@@ -985,8 +722,7 @@
         "jobName":{"shape":"Name"},
         "datasetArn":{"shape":"Arn"},
         "dataSource":{"shape":"DataSource"},
-        "roleArn":{"shape":"RoleArn"},
-        "datasetImportJobConfig":{"shape":"DatasetImportJobConfig"}
+        "roleArn":{"shape":"RoleArn"}
       }
     },
     "CreateDatasetImportJobResponse":{
@@ -1036,66 +772,6 @@
         "trackingId":{"shape":"TrackingId"}
       }
     },
-    "CreateFeatureExportJobRequest":{
-      "type":"structure",
-      "required":[
-        "jobName",
-        "featureTransformationArn",
-        "datasetGroupArn",
-        "dataDestination",
-        "roleArn"
-      ],
-      "members":{
-        "jobName":{"shape":"Name"},
-        "featureTransformationArn":{"shape":"Arn"},
-        "datasetGroupArn":{"shape":"Arn"},
-        "dataDestination":{"shape":"S3Location"},
-        "featureTransformationOverrides":{"shape":"FeaturizationParameters"},
-        "roleArn":{"shape":"RoleArn"}
-      }
-    },
-    "CreateFeatureExportJobResponse":{
-      "type":"structure",
-      "members":{
-        "featureExportJobArn":{"shape":"Arn"}
-      }
-    },
-    "CreateFeatureTransformationRequest":{
-      "type":"structure",
-      "required":[
-        "name",
-        "defaultParameters"
-      ],
-      "members":{
-        "name":{"shape":"Name"},
-        "defaultParameters":{"shape":"FeaturizationParameters"}
-      }
-    },
-    "CreateFeatureTransformationResponse":{
-      "type":"structure",
-      "members":{
-        "featureTransformationArn":{"shape":"Arn"}
-      }
-    },
-    "CreateRecipeRequest":{
-      "type":"structure",
-      "required":[
-        "name",
-        "algorithmArn",
-        "featureTransformationArn"
-      ],
-      "members":{
-        "name":{"shape":"Name"},
-        "algorithmArn":{"shape":"Arn"},
-        "featureTransformationArn":{"shape":"Arn"}
-      }
-    },
-    "CreateRecipeResponse":{
-      "type":"structure",
-      "members":{
-        "recipeArn":{"shape":"Arn"}
-      }
-    },
     "CreateSchemaRequest":{
       "type":"structure",
       "required":[
@@ -1117,8 +793,7 @@
       "type":"structure",
       "required":[
         "name",
-        "datasetGroupArn",
-        "minProvisionedTPS"
+        "datasetGroupArn"
       ],
       "members":{
         "name":{"shape":"Name"},
@@ -1127,7 +802,6 @@
         "recipeArn":{"shape":"Arn"},
         "datasetGroupArn":{"shape":"Arn"},
         "eventType":{"shape":"EventType"},
-        "minProvisionedTPS":{"shape":"TransactionsPerSecond"},
         "solutionConfig":{"shape":"SolutionConfig"}
       }
     },
@@ -1135,6 +809,19 @@
       "type":"structure",
       "members":{
         "solutionArn":{"shape":"Arn"}
+      }
+    },
+    "CreateSolutionVersionRequest":{
+      "type":"structure",
+      "required":["solutionArn"],
+      "members":{
+        "solutionArn":{"shape":"Arn"}
+      }
+    },
+    "CreateSolutionVersionResponse":{
+      "type":"structure",
+      "members":{
+        "solutionVersionArn":{"shape":"Arn"}
       }
     },
     "DataSource":{
@@ -1196,45 +883,8 @@
         "status":{"shape":"Status"},
         "creationDateTime":{"shape":"Date"},
         "lastUpdatedDateTime":{"shape":"Date"},
-        "datasetImportJobConfig":{"shape":"DatasetImportJobConfig"},
-        "latestDatasetImportJobRun":{"shape":"DatasetImportJobRunSummary"}
-      }
-    },
-    "DatasetImportJobConfig":{
-      "type":"structure",
-      "members":{
-        "importJobSchedule":{"shape":"ImportJobSchedule"}
-      }
-    },
-    "DatasetImportJobRun":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobRunArn":{"shape":"Arn"},
-        "datasetImportJobArn":{"shape":"Arn"},
-        "datasetArn":{"shape":"Arn"},
-        "dataSource":{"shape":"DataSource"},
-        "roleArn":{"shape":"Arn"},
-        "status":{"shape":"Status"},
-        "failureReason":{"shape":"FailureReason"},
-        "creationDateTime":{"shape":"Date"},
-        "lastUpdatedDateTime":{"shape":"Date"},
-        "datasetImportJobConfig":{"shape":"DatasetImportJobConfig"}
-      }
-    },
-    "DatasetImportJobRunSummary":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobRunArn":{"shape":"Arn"},
-        "status":{"shape":"Status"},
-        "creationDateTime":{"shape":"Date"},
-        "lastUpdatedDateTime":{"shape":"Date"},
         "failureReason":{"shape":"FailureReason"}
       }
-    },
-    "DatasetImportJobRuns":{
-      "type":"list",
-      "member":{"shape":"DatasetImportJobRunSummary"},
-      "max":100
     },
     "DatasetImportJobSummary":{
       "type":"structure",
@@ -1243,7 +893,8 @@
         "jobName":{"shape":"Name"},
         "status":{"shape":"Status"},
         "creationDateTime":{"shape":"Date"},
-        "lastUpdatedDateTime":{"shape":"Date"}
+        "lastUpdatedDateTime":{"shape":"Date"},
+        "failureReason":{"shape":"FailureReason"}
       }
     },
     "DatasetImportJobs":{
@@ -1340,13 +991,6 @@
       "member":{"shape":"DefaultIntegerHyperParameterRange"},
       "max":100
     },
-    "DeleteAlgorithmRequest":{
-      "type":"structure",
-      "required":["algorithmArn"],
-      "members":{
-        "algorithmArn":{"shape":"Arn"}
-      }
-    },
     "DeleteCampaignRequest":{
       "type":"structure",
       "required":["campaignArn"],
@@ -1361,13 +1005,6 @@
         "datasetGroupArn":{"shape":"Arn"}
       }
     },
-    "DeleteDatasetImportJobRequest":{
-      "type":"structure",
-      "required":["datasetImportJobArn"],
-      "members":{
-        "datasetImportJobArn":{"shape":"Arn"}
-      }
-    },
     "DeleteDatasetRequest":{
       "type":"structure",
       "required":["datasetArn"],
@@ -1380,20 +1017,6 @@
       "required":["eventTrackerArn"],
       "members":{
         "eventTrackerArn":{"shape":"Arn"}
-      }
-    },
-    "DeleteFeatureTransformationRequest":{
-      "type":"structure",
-      "required":["featureTransformationArn"],
-      "members":{
-        "featureTransformationArn":{"shape":"Arn"}
-      }
-    },
-    "DeleteRecipeRequest":{
-      "type":"structure",
-      "required":["recipeArn"],
-      "members":{
-        "recipeArn":{"shape":"Arn"}
       }
     },
     "DeleteSchemaRequest":{
@@ -1462,19 +1085,6 @@
         "datasetImportJob":{"shape":"DatasetImportJob"}
       }
     },
-    "DescribeDatasetImportJobRunRequest":{
-      "type":"structure",
-      "required":["datasetImportJobRunArn"],
-      "members":{
-        "datasetImportJobRunArn":{"shape":"Arn"}
-      }
-    },
-    "DescribeDatasetImportJobRunResponse":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobRun":{"shape":"DatasetImportJobRun"}
-      }
-    },
     "DescribeDatasetRequest":{
       "type":"structure",
       "required":["datasetArn"],
@@ -1499,19 +1109,6 @@
       "type":"structure",
       "members":{
         "eventTracker":{"shape":"EventTracker"}
-      }
-    },
-    "DescribeFeatureExportJobRequest":{
-      "type":"structure",
-      "required":["featureExportJobArn"],
-      "members":{
-        "featureExportJobArn":{"shape":"Arn"}
-      }
-    },
-    "DescribeFeatureExportJobResponse":{
-      "type":"structure",
-      "members":{
-        "featureExportJob":{"shape":"FeatureExportJob"}
       }
     },
     "DescribeFeatureTransformationRequest":{
@@ -1623,38 +1220,6 @@
       "max":256
     },
     "FailureReason":{"type":"string"},
-    "FeatureExportJob":{
-      "type":"structure",
-      "members":{
-        "jobName":{"shape":"Name"},
-        "featureExportJobArn":{"shape":"Arn"},
-        "featureTransformationArn":{"shape":"Arn"},
-        "datasetGroupArn":{"shape":"Arn"},
-        "dataDestination":{"shape":"S3Location"},
-        "status":{"shape":"Status"},
-        "failureReason":{"shape":"FailureReason"},
-        "creationDateTime":{"shape":"Date"},
-        "lastUpdatedDateTime":{"shape":"Date"},
-        "featureTransformationOverrides":{"shape":"FeaturizationParameters"},
-        "roleArn":{"shape":"Arn"}
-      }
-    },
-    "FeatureExportJobSummary":{
-      "type":"structure",
-      "members":{
-        "featureExportJobArn":{"shape":"Arn"},
-        "status":{"shape":"Status"},
-        "jobName":{"shape":"Name"},
-        "creationDateTime":{"shape":"Date"},
-        "lastUpdatedDateTime":{"shape":"Date"},
-        "failureReason":{"shape":"FailureReason"}
-      }
-    },
-    "FeatureExportJobs":{
-      "type":"list",
-      "member":{"shape":"FeatureExportJobSummary"},
-      "max":100
-    },
     "FeatureTransformation":{
       "type":"structure",
       "members":{
@@ -1678,17 +1243,17 @@
       "value":{"shape":"ParameterValue"},
       "max":100
     },
-    "GetMetricsRequest":{
+    "GetSolutionMetricsRequest":{
       "type":"structure",
-      "required":["solutionArn"],
+      "required":["solutionVersionArn"],
       "members":{
-        "solutionArn":{"shape":"Arn"},
         "solutionVersionArn":{"shape":"Arn"}
       }
     },
-    "GetMetricsResponse":{
+    "GetSolutionMetricsResponse":{
       "type":"structure",
       "members":{
+        "solutionVersionArn":{"shape":"Arn"},
         "metrics":{"shape":"Metrics"}
       }
     },
@@ -1736,10 +1301,6 @@
       "key":{"shape":"ParameterName"},
       "value":{"shape":"ParameterValue"},
       "max":100
-    },
-    "ImportJobSchedule":{
-      "type":"string",
-      "max":256
     },
     "IntegerHyperParameterRange":{
       "type":"structure",
@@ -1813,21 +1374,6 @@
         "nextToken":{"shape":"NextToken"}
       }
     },
-    "ListDatasetImportJobRunsRequest":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobArn":{"shape":"Arn"},
-        "nextToken":{"shape":"NextToken"},
-        "maxResults":{"shape":"MaxResults"}
-      }
-    },
-    "ListDatasetImportJobRunsResponse":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobRuns":{"shape":"DatasetImportJobRuns"},
-        "nextToken":{"shape":"NextToken"}
-      }
-    },
     "ListDatasetImportJobsRequest":{
       "type":"structure",
       "members":{
@@ -1870,20 +1416,6 @@
       "type":"structure",
       "members":{
         "eventTrackers":{"shape":"EventTrackers"},
-        "nextToken":{"shape":"NextToken"}
-      }
-    },
-    "ListFeatureExportJobsRequest":{
-      "type":"structure",
-      "members":{
-        "nextToken":{"shape":"NextToken"},
-        "maxResults":{"shape":"MaxResults"}
-      }
-    },
-    "ListFeatureExportJobsResponse":{
-      "type":"structure",
-      "members":{
-        "featureExportJobs":{"shape":"FeatureExportJobs"},
         "nextToken":{"shape":"NextToken"}
       }
     },
@@ -1962,12 +1494,6 @@
     "MetricValue":{"type":"double"},
     "Metrics":{
       "type":"map",
-      "key":{"shape":"Arn"},
-      "value":{"shape":"MetricsResult"},
-      "max":100
-    },
-    "MetricsResult":{
-      "type":"map",
       "key":{"shape":"MetricName"},
       "value":{"shape":"MetricValue"},
       "max":100
@@ -2009,9 +1535,9 @@
     "RecipeProvider":{
       "type":"string",
       "enum":[
-        "Service",
+        "SERVICE",
         "BYOR",
-        "All"
+        "ALL"
       ]
     },
     "RecipeSummary":{
@@ -2060,23 +1586,6 @@
       },
       "exception":true
     },
-    "RetrainSchedule":{
-      "type":"string",
-      "max":256
-    },
-    "RetrainSolutionRequest":{
-      "type":"structure",
-      "required":["solutionArn"],
-      "members":{
-        "solutionArn":{"shape":"Arn"}
-      }
-    },
-    "RetrainSolutionResponse":{
-      "type":"structure",
-      "members":{
-        "solutionVersionArn":{"shape":"Arn"}
-      }
-    },
     "RoleArn":{
       "type":"string",
       "max":256,
@@ -2101,7 +1610,6 @@
         "recipeArn":{"shape":"Arn"},
         "datasetGroupArn":{"shape":"Arn"},
         "eventType":{"shape":"EventType"},
-        "minProvisionedTPS":{"shape":"TransactionsPerSecond"},
         "solutionConfig":{"shape":"SolutionConfig"},
         "autoMLResult":{"shape":"AutoMLResult"},
         "status":{"shape":"Status"},
@@ -2114,8 +1622,6 @@
       "type":"structure",
       "members":{
         "eventValueThreshold":{"shape":"EventValueThreshold"},
-        "retrainingMode":{"shape":"UpdateMode"},
-        "retrainSchedule":{"shape":"RetrainSchedule"},
         "hpoConfig":{"shape":"HPOConfig"},
         "algorithmHyperParameters":{"shape":"HyperParameters"},
         "featureTransformationParameters":{"shape":"FeatureTransformationParameters"},
@@ -2181,54 +1687,24 @@
       "type":"string",
       "max":256
     },
-    "TransactionsPerSecond":{"type":"integer"},
+    "TransactionsPerSecond":{
+      "type":"integer",
+      "min":1
+    },
     "Tunable":{"type":"boolean"},
-    "UpdateAlgorithmRequest":{
-      "type":"structure",
-      "required":["algorithmArn"],
-      "members":{
-        "algorithmArn":{"shape":"Arn"},
-        "algorithmImage":{"shape":"AlgorithmImage"},
-        "defaultHyperParameters":{"shape":"HyperParameters"},
-        "defaultHyperParameterRanges":{"shape":"DefaultHyperParameterRanges"},
-        "defaultResourceConfig":{"shape":"ResourceConfig"},
-        "trainingInputMode":{"shape":"TrainingInputMode"}
-      }
-    },
-    "UpdateAlgorithmResponse":{
-      "type":"structure",
-      "members":{
-        "algorithmArn":{"shape":"Arn"}
-      }
-    },
     "UpdateCampaignRequest":{
       "type":"structure",
       "required":["campaignArn"],
       "members":{
         "campaignArn":{"shape":"Arn"},
         "solutionVersionArn":{"shape":"Arn"},
-        "updateMode":{"shape":"UpdateMode"}
+        "minProvisionedTPS":{"shape":"TransactionsPerSecond"}
       }
     },
     "UpdateCampaignResponse":{
       "type":"structure",
       "members":{
         "campaignArn":{"shape":"Arn"}
-      }
-    },
-    "UpdateDatasetImportJobRequest":{
-      "type":"structure",
-      "required":["datasetImportJobArn"],
-      "members":{
-        "datasetImportJobArn":{"shape":"Arn"},
-        "dataSource":{"shape":"DataSource"},
-        "datasetImportJobConfig":{"shape":"DatasetImportJobConfig"}
-      }
-    },
-    "UpdateDatasetImportJobResponse":{
-      "type":"structure",
-      "members":{
-        "datasetImportJobArn":{"shape":"Arn"}
       }
     },
     "UpdateDatasetRequest":{
@@ -2243,57 +1719,6 @@
       "type":"structure",
       "members":{
         "datasetArn":{"shape":"Arn"}
-      }
-    },
-    "UpdateFeatureTransformationRequest":{
-      "type":"structure",
-      "required":["featureTransformationArn"],
-      "members":{
-        "featureTransformationArn":{"shape":"Arn"},
-        "defaultParameters":{"shape":"FeaturizationParameters"}
-      }
-    },
-    "UpdateFeatureTransformationResponse":{
-      "type":"structure",
-      "members":{
-        "featureTransformationArn":{"shape":"Arn"}
-      }
-    },
-    "UpdateMode":{
-      "type":"string",
-      "enum":[
-        "AUTO",
-        "MANUAL"
-      ],
-      "max":256
-    },
-    "UpdateRecipeRequest":{
-      "type":"structure",
-      "required":["recipeArn"],
-      "members":{
-        "recipeArn":{"shape":"Arn"},
-        "algorithmArn":{"shape":"Arn"},
-        "featureTransformationArn":{"shape":"Arn"}
-      }
-    },
-    "UpdateRecipeResponse":{
-      "type":"structure",
-      "members":{
-        "recipeArn":{"shape":"Arn"}
-      }
-    },
-    "UpdateSolutionRequest":{
-      "type":"structure",
-      "required":["solutionArn"],
-      "members":{
-        "solutionArn":{"shape":"Arn"},
-        "solutionConfig":{"shape":"SolutionConfig"}
-      }
-    },
-    "UpdateSolutionResponse":{
-      "type":"structure",
-      "members":{
-        "solutionArn":{"shape":"Arn"}
       }
     }
   }

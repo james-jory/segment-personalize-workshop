@@ -12,6 +12,20 @@
     "uid":"personalize-runtime-2018-05-22"
   },
   "operations":{
+    "GetPersonalizedRanking":{
+      "name":"GetPersonalizedRanking",
+      "http":{
+        "method":"POST",
+        "requestUri":"/personalize-ranking"
+      },
+      "input":{"shape":"GetPersonalizedRankingRequest"},
+      "output":{"shape":"GetPersonalizedRankingResponse"},
+      "errors":[
+        {"shape":"InvalidInputException"},
+        {"shape":"ResourceNotFoundException"}
+      ],
+      "idempotent":true
+    },
     "GetRecommendations":{
       "name":"GetRecommendations",
       "http":{
@@ -25,20 +39,6 @@
         {"shape":"ResourceNotFoundException"}
       ],
       "idempotent":true
-    },
-    "PersonalizeRanking":{
-      "name":"PersonalizeRanking",
-      "http":{
-        "method":"POST",
-        "requestUri":"/personalize-ranking"
-      },
-      "input":{"shape":"PersonalizeRankingRequest"},
-      "output":{"shape":"PersonalizeRankingResponse"},
-      "errors":[
-        {"shape":"InvalidInputException"},
-        {"shape":"ResourceNotFoundException"}
-      ],
-      "idempotent":true
     }
   },
   "shapes":{
@@ -46,6 +46,27 @@
       "type":"string",
       "max":256,
       "pattern":"arn:([a-z\\d-]+):personalize:.*:.*:.+"
+    },
+    "ErrorMessage":{"type":"string"},
+    "GetPersonalizedRankingRequest":{
+      "type":"structure",
+      "required":[
+        "campaignArn",
+        "inputList",
+        "userId"
+      ],
+      "members":{
+        "campaignArn":{"shape":"Arn"},
+        "inputList":{"shape":"InputList"},
+        "userId":{"shape":"UserID"},
+        "searchQuery":{"shape":"Query"}
+      }
+    },
+    "GetPersonalizedRankingResponse":{
+      "type":"structure",
+      "members":{
+        "personalizedRanking":{"shape":"ItemList"}
+      }
     },
     "GetRecommendationsRequest":{
       "type":"structure",
@@ -71,6 +92,7 @@
     "InvalidInputException":{
       "type":"structure",
       "members":{
+        "message":{"shape":"ErrorMessage"}
       },
       "error":{"httpStatusCode":400},
       "exception":true
@@ -89,26 +111,6 @@
       "max":100,
       "min":0
     },
-    "PersonalizeRankingRequest":{
-      "type":"structure",
-      "required":[
-        "campaignArn",
-        "inputList",
-        "userId"
-      ],
-      "members":{
-        "campaignArn":{"shape":"Arn"},
-        "inputList":{"shape":"InputList"},
-        "userId":{"shape":"UserID"},
-        "searchQuery":{"shape":"Query"}
-      }
-    },
-    "PersonalizeRankingResponse":{
-      "type":"structure",
-      "members":{
-        "personalizedRanking":{"shape":"ItemList"}
-      }
-    },
     "PredictedItem":{
       "type":"structure",
       "members":{
@@ -123,6 +125,7 @@
     "ResourceNotFoundException":{
       "type":"structure",
       "members":{
+        "message":{"shape":"ErrorMessage"}
       },
       "error":{"httpStatusCode":404},
       "exception":true
