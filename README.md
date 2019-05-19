@@ -1,6 +1,6 @@
 # Segment + Amazon Personalize Workshop
 
-[Segment](http://segment.com) is the easiest way to collect data once about what users are doing and send the data to third party tools and warehouses. Segment does this by enabling businesses to collect first-party event data from their websites, mobile apps, and cloud tools like email and CRM, combine with offline data, then standardize and clean the data so it can be utilized in 200+ tools like marketing, analytics, attribution, and warehouses including Redshift.
+[Segment](http://segment.com) provides an easy way to collect data once about what users are doing and send the data to third party tools and warehouses. Segment does this by enabling businesses to collect first-party event data from their websites, mobile apps, and cloud tools like email and CRM, combine with offline data, then standardize and clean the data so it can be utilized in 200+ tools like marketing, analytics, attribution, and warehouses including Amazon Redshift.
 
 [Amazon Personalize](https://aws.amazon.com/personalize/) is a machine learning service that makes it easy for developers to create individualized recommendations for customers using their applications.
 
@@ -20,7 +20,7 @@ Before following the exercises below, be sure to clone this repository to your l
 git clone https://github.com/james-jory/segment-personalize-workshop.git
 ```
 
-If you are following this workshop on your own (i.e. in your own personal AWS account and **not** part of an organized workshop delivered by AWS), you will also need apply the CloudFormation template [eventengine/workshop.template](eventengine/workshop.template) within your account before stepping through the exercises. If you're participating in an AWS-led workshop, this has likely already been done for you. This template will setup the IAM roles, policies, and S3 bucket required by the exercises.
+If you are following this workshop on your own (i.e. in your own personal AWS account and **not** part of an organized workshop delivered by AWS), you will also need to apply the CloudFormation template [eventengine/workshop.template](eventengine/workshop.template) within your account before stepping through the exercises. This template will setup the necessary resources and IAM roles & policies required by the exercises in this workshop. If you're participating in an AWS-led workshop, this has likely already been done for you.
 
 ## [Exercise 1](exercise1/) - Data Preparation, Filtering, and Exploration
 
@@ -30,10 +30,10 @@ The focus of this [exercise](exercise1/) is to learn how to use historical click
 
 In this [exercise](exercise2/) we will pick up where we left off in the prior exercise by uploading the transformed data from S3 into a Personalize Dataset Group. Then you will create a Personalize Solution based on this data. A solution is the term Amazon Personalize uses for a trained machine learning model. Creating a solution entails optimizing the model to deliver the best results for a specific business need. Amazon Personalize uses "recipes" to create these personalized solutions. We will wrap up this exercise by creating a campaign. A deployed solution is known as a campaign, and is able to make recommendations for your users.
 
-## [Exercise 3](exercise3/) - Real-Time Data Collection & Recommendation Optimization
+## [Exercise 3](exercise3/) - Getting Recommendations from Personalize
 
-In this [exercise](exercise3/) we will build the components necessary to ingest clickstream data from Segment using an Amazon Kinesis Data Stream and Amazon Lambda and update Personalize in real-time. This will allow Personalize to learn from customer interactions that are being collected by Segment to improve its recommendations.
+In this [exercise](exercise3/) we will demonstrate how recommendations from Personalize can be accessed by your applications via a REST API using [Amazon API Gateway](https://aws.amazon.com/api-gateway/) and [AWS Lambda](https://aws.amazon.com/lambda/). This Lambda function serves as more than a simple proxy, however. We will demonstrate how this function can be used to add a filtering capability by taking into account recent purchase information available in Segment Personas.
 
-## [Exercise 4](exercise4/) - Activating Recommendations using Segment Personas
+## [Exercise 4](exercise4/) - Real-Time Data Collection and Activating Recommendations using Segment Personas
 
-In this final [exercise](exercise4/) we will look at how recommendations from Personalize can be further enhanced by filtering them against traits such as purchase history that already exists in Segment and leveraging personalized recommendations across other integrated solutions in your Segment account. This allows to you weave recommendations not only in your own website and mobile apps but also throughout your martech stack.
+In this final [exercise](exercise4/) we will look at how [Segment's Amazon Personalize](https://segment.com/docs/destinations/amazon-personalize/) destination can be used to send events collected in real-time directly to Personalize. This will allow Personalize to learn from customer interactions that are being collected by Segment to improve its recommendations. Furthermore, we will learn now to take recommendations from Personalize, apply the same filtering we implemented in the prior exercise, and attach those recommendations to customer profiles in Segment Personas. This allows to you weave recommendations not only in your own website and mobile apps but also throughout your martech stack.

@@ -2,13 +2,13 @@ import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
-from awsglue.dynamicframe import DynamicFrame
 from awsglue.job import Job
+from awsglue.dynamicframe import DynamicFrame
 from pyspark.context import SparkContext
 from pyspark.sql.functions import unix_timestamp
 
-## @params: [JOB_NAME,S3_JSON_INPUT_PATH,S3_CSV_OUTPUT_PATH]
-args = getResolvedOptions(sys.argv, ['JOB_NAME', 'S3_JSON_INPUT_PATH', 'S3_CSV_OUTPUT_PATH'])
+## @params: [JOB_NAME,S3_CSV_OUTPUT_PATH]
+args = getResolvedOptions(sys.argv, ['JOB_NAME', 'S3_CSV_OUTPUT_PATH'])
 
 sc = SparkContext()
 glueContext = GlueContext(sc)
@@ -16,16 +16,15 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-# Load JSON into dynamic frame
-datasource0 = glueContext.create_dynamic_frame.from_options('s3', {'paths': [args['S3_JSON_INPUT_PATH']]}, 'json')
-print("Input file: ", args['S3_JSON_INPUT_PATH'])
+# Load JSON files into dynamic frame.
+datasource0 = glueContext.create_dynamic_frame_from_options("s3", {'paths': ["s3://segment-personalize-data/segment-logs"], 'recurse':True}, format="json")
 print("Input file total record count: ", datasource0.count())
 
-# Filters the JSON documents that we want included in the output CSV
+# Filters the JSON documents that we want included in the output CSV.
+# These are the event types we're interested for our dataset.
 supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
 def filter_function(dynamicRecord):
-	if ('anonymousId' in dynamicRecord and
-			'userId' in dynamicRecord and
+	if ('userId' in dynamicRecord and
 			'properties' in dynamicRecord and
 			'sku' in dynamicRecord["properties"] and
 			'event' in dynamicRecord and
@@ -40,7 +39,6 @@ print("Filtered record count: ", interactions.count())
 
 # Map only the fields we want in the output CSV, changing names to match target schema.
 applymapping1 = ApplyMapping.apply(frame = interactions, mappings = [ \
-	("anonymousId", "string", "ANONYMOUS_ID", "string"), \
 	("userId", "string", "USER_ID", "string"), \
 	("properties.sku", "string", "ITEM_ID", "string"), \
 	("event", "string", "EVENT_TYPE", "string"), \
@@ -54,6 +52,8 @@ onepartitionDF = onepartitionDF.withColumn("TIMESTAMP", \
 	unix_timestamp(onepartitionDF['TIMESTAMP_ISO'], "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
 # Convert back to dynamic frame
 onepartition = DynamicFrame.fromDF(onepartitionDF, glueContext, "onepartition_df")
+# Drop the ISO formatted timestamp
+onepartition = onepartition.drop_fields(['TIMESTAMP_ISO'])
 
 # Write output back to S3 as a CSV
 glueContext.write_dynamic_frame.from_options(frame = onepartition, connection_type = "s3", \
