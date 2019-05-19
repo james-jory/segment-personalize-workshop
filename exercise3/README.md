@@ -1,23 +1,14 @@
-# Exercise 3 - Real-Time Data Collection & Recommendation Optimization
+# Exercise 3 - Getting Recommendations from Personalize
 
 ## Overview
 
-Amazon Personalize can make recommendations based purely on historical data as we covered using historical data from Segment in [Exercise 1](../exercise1) and [Exercise 2](../exercise2). Amazon Personalize can also make recommendations purely on real-time clickstream data, or a combination of both, using the Amazon Personalize event ingestion SDK.
+After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the GetRecommendations API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website.
 
-> Note: A minimum of 1000 records of combined interaction data is required to train a model.
-
-The event ingestion SDK includes a JavaScript library for recording events from web client applications. The SDK also includes a library for recording events in server code.
+For search-personalization recipes, the PersonalizeRanking API re-ranks a list of recommended items based on a specified query.
 
 ### What You'll Be Building
 
-![Exercise 3 Architecture](images/Architecture-Exercise3.png)
-
-In this exercise we will be leveraing the data collection capabilities of Segment to stream clickstream data to a Kinesis Stream in real-time. A Lambda function will consume events from this stream, transform the events it consumes into the parameters required by Personalize, and then update Personalize.
-
-* Create Kinesis Stream
-* Create and configure a Kinesis Stream destination in Segment
-* Send test events through the destination in Segment to Kinesis
-* Create Lambda function that consumes events from Kinesis and writes to Personalize using the [PutEvents](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) API
+In this workshop we have been focused on building a user-personalization solution, so far trained on historical event data from Segment. In this exercise we will demonstrate how you can integrate recommendations from Personalize into your applications using a REST API. We will build an API Gateway endpoint that calls a Lambda function to fetch recommendations from Personalize. This example will show how to build a basic API endpoint to call Personalize directly from your applications for use cases where you will want to directly integrate recommendations.
 
 ### Exercise Preparation
 
@@ -27,169 +18,21 @@ If you haven't already cloned this repository to your local machine, do so now.
 git clone https://github.com/james-jory/segment-personalize-workshop.git
 ```
 
-## Part 1 - Create Kinesis Stream
+## Part 1 - Create API Endpoint & Lambda Function
 
-We'll start by creating a Kinesis Stream in AWS that will be the sink for events sent by Segment. Login to the AWS account for this workshop and browse to the Kinesis service page. Click on the "Create data stream" button.
+![Exercise 3 Architecture](images/Architecture-Exercise3-Part1.png)
 
-![Kinesis Dashboard](images/KinesisDashboard.png)
-
-On the "Create Kinesis stream" page, enter the stream name as "SegmentDestinationStream". __You must name your stream "SegmentDestinationStream" since there are IAM roles that have been pre-provisioned based on this stream name__. A shard count of "1" will be more than adequate for the workshop. Click the "Create Kinesis stream" button at the bottom of the page to create the stream.
-
-![Create Kinesis Stream](images/KinesisCreateStream.png)
-
-After a few moments your Kinesis stream will be created and ready for use.
-
-![Kinesis Stream Created](images/KinesisStreamCreated.png)
-
-## Part 2 - Create Kinesis Stream Destination in Segment
-
-Now that we have a stream to receive events, let's setup a Kinesis Stream destination in Segment. Before we can setup a destination, though, you must have a Source configured. If you don't have a Source configured, use a website Javascript or Node.js source.
-
-To setup a Destination for Kinesis, click "Destinations" in the left navigation and then click the "Add Destination" button.
-
-![Segment Destinations](images/SegmentDestinations.png)
-
-On the Destinations catalog page, enter "kinesis" in the search field and click on "Amazon Kinesis" in the search results.
-
-![Segment Add Kinesis Destination](images/SegmentKinesis-AddDestination.png)
-
-Click the "Configure Amazon Kinesis" button.
-
-![Segment Kinesis Config Start](images/SegmentKinesis-ConfigStart.png)
-
-Select the source to use with this destination and click the "Confirm Source" button.
-
-![Segment Kinesis Select Source](images/SegmentKinesis-ConfirmSource.png)
-
-One of the required parameters for configuring the Kinesis destination is an IAM Role ARN. This role must have a cross-account trust policy that will allow Segment to write to the Kinesis in your account from their AWS account. A role has already been pre-provisioned in the AWS account used for the workshop. We just need to copy the ARN to the clipboard.
-
-1. Open a new browser tab/window and login to your AWS account for the workshop.
-2. Browse to the IAM service page.
-3. Click on Roles in the left navigation and locate the role with a name that starts with `personalize-module-SegmentKinesisRole-...`.
-4. Click on the role name to view the role details.
-5. At the top of the page where the "Role ARN" is displayed, click on the copy icon at the end of the line.
-6. Switching back to your Segment tab/window, paste the Role ARN into the Role Address field.
-
-![Kinesis IAM Role ARN](images/SegmentKinesis-IAMRole.png)
-
-Complete the "Amazon Kinesis Settings" page by entering "us-east-1" for the AWS region, "123456789" for the Secret ID, and "SegmentDestinationStream" for the stream name. Finally, be sure to enable this destination at the top of the page.
-
-> We are using "123456789" for the Secret ID for this workshop so that it will match the IAM policy that is pre-provisioned for all attendees. For production deployments you will want to use a more suitably unique secret.
-
-![Segment Kinesis Destination Settings](images/SegmentKinesis-Settings.png)
-
-## Part 3 - Test Kinesis Destination using Event Tester
-
-In your Segment account, click on the Event Tester for the Kinesis Destination just created above. Edit the JSON for the test event to include a `sku` field inside `properties`. Set the `sku` value to `ocean-blue-shirt` (which is a SKU in our test dataset), change the `userId` to `2941404340` (which also a valid user in our dataset), and change the event to `Product Clicked`. Finally, add an `anonymousId` field to the JSON document since our ETL job references it as well.
-
-```json
-{
-  "messageId": "test-message-33dlvn",
-  "timestamp": "2019-02-25T15:55:05.905Z",
-  "type": "track",
-  "email": "test@example.org",
-  "properties": {
-    "sku": "ocean-blue-shirt",
-    "property2": "test",
-    "property3": true
-  },
-  "userId": "2941404340",
-  "anonymousId": "2941404340",
-  "event": "Product Clicked"
-}
-```
-
-Click the "Send Event" button to send this event to Kinesis. You should see a 200/success response in the right panel. Send the event 5-10 more times to add multiple events to the stream (and enough to complete a batch for the Lambda consumer function that we will be building in the next part of this exercise).
-
-![Segment Kinesis Destination Event Tester](images/SegmentKinesis-EventTester.png)
-
-You can verify that the events are being received by Kinesis by inspecting the "Monitoring" tab on the stream's detail page in the AWS console. Login to your AWS account for the workshop, browse to the Kinesis service page, and click the "Data Streams" link in the left navigation. Click on the "SegmentDestinationStream" stream and then the "Monitoring" tab.
-
-![Kinesis Stream Monitoring](images/Kinesis-Monitoring.png)
-
-Scroll down to where some of the "PutRecord" metrics are displayed. It may take a minute or two before the graphs are updated. Click the refresh icon button to update the metrics.
-
-![Kinesis Stream Monitoring](images/Kinesis-PutRecordsGraph.png)
-
-## Part 4 - Build Lambda Function to Process Kinesis Stream
-
-To complete our real-time event pipeline we'll build a Lambda function that consumes events from the "SegmentDestinationStream" stream, transforms the field events we need to update Personalize, and finally calling the Personalize Record API on a Personalize Event Tracker.
-
-Start by browsing to the Lambda service page in the AWS account you have been assigned for the workshop. Click the "Create a function" button to create a new function.
-
-![Lambda Dashboard](images/LambdaDashboard.png)
-
-Select the "Author from scratch" radio button since we will be providing the source code for the function. Enter a name for your function and select Python 3.7 for the runtime. For the Role field, select "Choose an existing role" from the dropdown. Your AWS account already includes a pre-provisioned role starting with the name `personalize-module-SegmentKinesisHandlerRole-...`. Select that role and click the "Create function" button.
+First we will create a Lambda function that will be called by an API Gateway endpoint. In the AWS console for the account you've been assigned for the workshop, browse to the Lambda service page. Click the "Create function" button to create a new function.
 
 ![Lambda Create Function](images/LambdaCreateFunction.png)
 
-### Lambda Function Source Code
+Enter a name for your function and specify Python 3.7 as the runtime. Expand the "Permissions" panel and select an existing IAM role, that has already been created for you, with a name like `module-personalize-SegmentPersonalizeLambdaRole-...`). Click "Create function".
 
-Scroll down to the "Function code" panel. Since the function has already been written for you, we need to replace the base function code provided by Lambda with our function source code. The complete function can be found at [segment_kinesis_consumer/lambda_function.py](segment_kinesis_consumer/lambda_function.py) and is displayed below.
+![Lambda Function Config](images/LambdaRecEndpointCreate.png)
 
-```python
-import base64
-import boto3
-import json
-import os
-import dateutil.parser as dp
-import init_personalize_api as api_helper
+Scroll down to the "Function code" panel. The source code for the function has already been written and is provided in this repository at [recommendations/lambda_function.py](recommendations/lambda_function.py). Open this file in a new browser tab/window, copy it to your clipboard, and paste it into the source code editor for our Lambda function as shown below. Click the "Save" button at the top of the page when you're done.
 
-def lambda_handler(event, context):
-    """ Consumes events from the Kinesis Stream destination configured in Segment.
-    See the Segment documentation for how to setup Kinesis: https://segment.com/docs/destinations/amazon-kinesis/
-    """
-
-    if not 'personalize_tracking_id' in os.environ:
-        raise Exception('personalize_tracking_id not configured as environment variable')
-
-    # Initialize Personalize API (this is temporarily needed until Personalize is fully
-    # integrated into boto3). Leverages Lambda Layer.
-    api_helper.init()
-
-    print("event: " + json.dumps(event))
-
-    personalize_events = boto3.client('personalize-events')
-
-    for record in event['Records']:
-        print("Payload: " + json.dumps(record))
-        segment_event = json.loads(base64.b64decode(record['kinesis']['data']).decode('utf-8'))
-        print("Segment event: " + json.dumps(segment_event))
-
-        # For the Personalize workshop, we really only care about these events
-        supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
-        if ('anonymousId' in segment_event and
-            'userId' in segment_event and
-            'properties' in segment_event and
-            'sku' in segment_event["properties"] and
-            'event' in segment_event and
-            segment_event['event'] in supported_events):
-            print("Calling Personalize.put_events()")
-            properties = { "id": segment_event["properties"]["sku"] }
-            personalize_events.put_events(
-                trackingId = os.environ['personalize_tracking_id'],
-                userId = segment_event['userId'],
-                sessionId = segment_event['anonymousId'],
-                eventList = [
-                    {
-                        "eventId": segment_event['messageId'],
-                        "sentAt": int(dp.parse(segment_event['timestamp']).strftime('%s')),
-                        "eventType": segment_event['event'],
-                        "properties": json.dumps(properties)
-                    }
-                ]
-            )
-        else:
-            print("Segment event does not contain required fields (anonymousId, sku, and userId)")
-```
-
-Our function iterates over the `event[Records]`, inspecting the payload for each record for a qualiying event, and then calls the Personalize Record endpoint for our Event Tracker. Logic of interest in the `for` loop includes specifying the `itemId` in the `properties` field from the `properties.sku` field in the Segment event and converting the timestamp from ISO 8601 to a UNIX timestamp as we saw in the ETL job in [Exercise 1](../exercise1).
-
-Copy the full source code above (or from the [file](segment_kinesis_consumer/lambda_function.py)) to your clipboard and paste over the source currently in the function code editor.
-
-![Lambda Function Source](images/LambdaFunctionCode.png)
-
-Click the "Save" button at the top of the page to save your function.
+![Lambda Function Code](images/LambdaRecCode.png)
 
 ### Wire up Personalize API using Lambda Layer (Preview only)
 
@@ -201,7 +44,7 @@ import of import init_personalize_api as api_helper
 api_helper.init()
 ```
 
-This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. This is only necessary while Personalize is in Preview. Once Personalize is GA and the API is bundled with the Python SDK, as well as other language SDKs, this supporting Layer will no longer be needed. For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
+This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. ***This is only necessary while Personalize is in Preview. Once Personalize is GA and the API is bundled with the Python SDK, as well as other language SDKs, this supporting Layer will no longer be needed.*** For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
 
 To install our Layer, open the Lambda navigation panel and click "Layers".
 
@@ -231,64 +74,42 @@ Select the layer we just added and the latest version. Click "Add" to add the la
 
 ![Lambda Function Layer Add](images/LambdaLayerAddSelect.png)
 
-### Wire-up Personalize Event Tracker
+Next, we will connect Amazon API Gateway to our Lambda funciton. Select "API Gateway" in the "Add triggers" panel in the Designer panel.
 
-Another dependency in our function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint as shown in the following excerpt.
+![Lambda API Gateway Trigger](images/LambdaRecAPIGW_Trigger.png)
 
-```python
-personalize_events.put_events(
-    trackingId = os.environ['personalize_tracking_id'],
-    userId = segment_event['userId'],
-    sessionId = segment_event['anonymousId'],
-    eventList = [
-        {
-            "eventId": segment_event['messageId'],
-            "sentAt": int(dp.parse(segment_event['timestamp']).strftime('%s')),
-            "eventType": segment_event['event'],
-            "properties": json.dumps(properties)
-        }
-    ]
-)
-```
+Scroll down to the "Configure triggers" panel. For the API dropdown, select "Create a new API" and set the Security as "Open". For a production deployment you would want to [control access](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html) to this endpoint but that is beyond the scope of this exercise.
 
-The `trackingId` function argument identifies the Personalize Event Tracker which should handle the events we submit. This value is passed to our Lambda function as an Environment variable. Let's create a Personalize Event Tracker for the Dataset Group we created in [Exercise 2](../exercise2).
+![Lambda API Gateway Config](images/LambdaRecAPIGW_Config.png)
 
-In another browser tab/window, browse to the Personalize service landing page in the AWS console. Click on the Dataset Group created in [Exercise 2](../exercise2) and then "Event trackers" in the left navigation. Click the "Create event tracker" button.
+Click "Add" to add API Gateway as a trigger to our function and then click "Save" at the top of the page to save our changes.
 
-![Personalize Event Trackers](images/PersonalizeCreateTracker.png)
+Next, we need to add environment variables for Segment and for the function to tell it the Personalize Campaign to call for retrieving recommendations.
 
-Enter a name for your Event Tracker and select the pre-provisioned CloudWatch IAM role that starts with `personalize-module-PersonalizeExecutionRole-..`. If the IAM role is not present, select "Enter a custom IAM role ARN" and paste the IAM ARN for the role (obtained from IAM service page for the role name like `personalize-module-PersonalizeExecutionRole-..`). Click the "Next" button to create the tracker.
+To obtain the Personalize Campaign ARN, browse to the Personalize service landing page in the AWS console. Select the Dataset Group you created earlier and then Campaigns in the left navigation. Click on the "segment-workshop-campaign" campaign you created earlier and copy the "Campaign arn" to your clipboard.
 
-![Personalize Event Tracker Config](images/PersonalizeEventTrackerConfig.png)
+![Personalize Campaign ARN](images/PersonalizeCampaignArn.png)
 
-The Event Tracker's tracking ID is displayed on the following page and is also available on the Event Tracker's detail page. Copy this value to your clipboard.
+Return to our Lambda function and scroll down to the "Environment variables" panel. Add an environment variable with the key `personalize_campaign_arn` and value of the Campaign ARN in your clipboard. Click the "Save" button at the top of the page to save your changes.
 
-![Personalize Event Tracker Config](images/PersonalizeEventTrackerCreating.png)
+![Lambda Campaign ARN Environment Variable](images/LambdaRecCampaignArn.png)
 
-Returning to our Lambda function, paste the Event Tracker's tracking ID into an Environment variable for our function with the key `personalize_tracking_id`.
+Now let's browse to the API Gateway service page in the AWS console to test our endpoint. Under "APIs" you should see the recommendations API created when we setup our Lambda trigger. Click on the API name.
 
-![Lambda Environment Variable](images/LambdaEnvVariable.png)
+![API Gateway APIs](images/APIGW_endpoint.png)
 
-### Wire-up Kinesis Stream as Trigger
+Click on the "Test" link to build a test request.
 
-Now that the Layer and Event Tracker are in place, let's turn our attention to wiring up our function to the Kinesis stream we created earlier in this exercise. Scroll back to the Lambda Designer panel at the top of the page and locate "Kinesis" in the "Add triggers" left-side panel. Click on Kinesis to add Kinesis as a trigger for our function.
+![API Gateway Test](images/APIGW_Test.png)
 
-![Lambda Kinesis Trigger](images/LambdaKinesisTrigger.png)
+Select "GET" as the Method and enter a Query String of `userId=2941404340`. This is one of the users in our test dataset. Scroll to the bottom of the page and click the "Test" button.
 
-Scroll down the page to the "Configure triggers" panel. Select the Kinesis stream created earlier, set a "Batch size" of 2 (since we're testing with a small number of manually generated events), and set the "Starting position" to "Trim Horizon". Click the "Add" button to add the trigger.
+![API Gateway Test](images/APIGW_TestGet.png)
 
-![Lambda Kinesis Config](images/LambdaKinesisConfig.png)
+This will send a request through API Gateway which will call our Lambda function. The function will query Personalize for recommendations and return the results to API Gateway.
 
-Scroll to the top of the page and click the "Save" button to save all of our changes.
+![API Gateway Test](images/APIGW_TestGetResults.png)
 
-![Lambda Save Function](images/LambdaSaveFunction.png)
+As you can see, the GetRecommendations endpoint for Personalize returns itemIds for recommended items for the specified user. Typically you would then use these itemIds to retrieve meta infromation such as item names, descriptions, and images from, say, a database or API in your application.
 
-After your Lambda function has been saved and has completed its first poll of the Kinesis stream, you should start to see invocation, duration, availability statistics appear on the Lambda Monitoring tab.
-
-![Lambda Save Function](images/LambdaMonitoring.png)
-
-In addition, you can inspect the CloudWatch Logs for our function to see the logging output including any errors that may have occurred.
-
-![Lambda Monitoring](images/CloudWatchLambda.png)
-
-In the final [exercise](../exercise4) we will bring everything together and learn how to integrate recommendations from Personalize in your application as well as how to use Segment to activate recommendations in other integrations in your Segment account.
+In the final [exercise](../exercise4) we will bring everything together and learn how to integrate recommendations from Personalize with your customer profiles in Segment. This allows you to activate recommendations across other integrations in your Segment account.

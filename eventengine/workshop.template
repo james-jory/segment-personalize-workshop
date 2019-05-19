@@ -2,11 +2,6 @@
 "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "IAM Roles required for Segment + Personalize workshop",
     "Parameters": {
-        "KinesisStreamName": {
-            "Type": "String",
-            "Default": "SegmentDestinationStream",
-            "Description": "Enter name for Kinesis stream written to by Segment as a destination."
-        },
         "CampaignName": {
             "Type": "String",
             "Default": "segment-workshop-campaign",
@@ -67,28 +62,41 @@
                 }
             }
         },
-        "SegmentLambdaRole": {
+        "PersonalizeServiceRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "Path": "/",
+                "Path": "/service-role/",
                 "Policies": [
                     {
                         "PolicyDocument": {
                             "Version": "2012-10-17",
                             "Statement": [
                                 {
-                                    "Effect": "Allow",
                                     "Action": [
-                                        "lambda:InvokeFunction"
+                                        "s3:ListBucket"
                                     ],
+                                    "Effect": "Allow",
                                     "Resource": {
-                                        "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SegmentLambdaDestinationFunctionName}"
+                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}"
+                                    }
+                                },
+                                {
+                                    "Action": [
+                                        "s3:GetObject",
+                                        "s3:PutObject"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/*"
                                     }
                                 }
                             ]
                         },
-                        "PolicyName": "segment-lambda-policy"
+                        "PolicyName": "personalize-execution-policy"
                     }
+                ],
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonPersonalizeFullAccess"
                 ],
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -96,62 +104,14 @@
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "AWS": "arn:aws:iam::595280932656:root"
+                                "Service": "personalize.amazonaws.com"
                             },
-                            "Action": "sts:AssumeRole",
-                            "Condition": {
-                                "StringEquals": {
-                                    "sts:ExternalId": { "Ref": "SegmentSecretId" }
-                                }
-                            }
+                            "Action": "sts:AssumeRole"
                         }
                     ]
                 }
             }
         },
-        "SegmentKinesisRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "Path": "/",
-                "Policies": [
-                    {
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "kinesis:PutRecord"
-                                    ],
-                                    "Resource": {
-                                        "Fn::Sub": "arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${KinesisStreamName}"
-                                    }
-                                }
-                            ]
-                        },
-                        "PolicyName": "segment-kinesis-policy"
-                    }
-                ],
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "AWS": "arn:aws:iam::595280932656:root"
-                            },
-                            "Action": "sts:AssumeRole",
-                            "Condition": {
-                                "StringEquals": {
-                                    "sts:ExternalId": { "Ref": "SegmentSecretId" }
-                                }
-                            }
-                        }
-                    ]
-                }
-            }
-        },
-
         "SegmentPersonalizeLambdaRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -208,7 +168,6 @@
                 }
             }
         },
-
         "SegmentExecutePersonalizeLambdaRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -248,115 +207,6 @@
                                     "sts:ExternalId": { "Ref": "SegmentSecretId" }
                                 }
                             }
-                        }
-                    ]
-                }
-            }
-        },
-        "PersonalizeExecutionRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "Path": "/service-role/",
-                "Policies": [
-                    {
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Action": [
-                                        "s3:ListBucket"
-                                    ],
-                                    "Effect": "Allow",
-                                    "Resource": {
-                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}"
-                                    }
-                                },
-                                {
-                                    "Action": [
-                                        "s3:GetObject",
-                                        "s3:PutObject"
-                                    ],
-                                    "Effect": "Allow",
-                                    "Resource": {
-                                        "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/*"
-                                    }
-                                }
-                            ]
-                        },
-                        "PolicyName": "personalize-execution-policy"
-                    }
-                ],
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AmazonPersonalizeFullAccess"
-                ],
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "personalize.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                }
-            }
-        },
-        "SegmentKinesisHandlerRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "Path": "/",
-                "Policies": [
-                    {
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "logs:CreateLogGroup",
-                                        "logs:CreateLogStream",
-                                        "logs:PutLogEvents"
-                                    ],
-                                    "Resource": "arn:aws:logs:*:*:*"
-                                },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "personalize:*"
-                                    ],
-                                    "Resource": [
-                                        "*",
-                                        { "Fn::Sub": "arn:aws:personalize-events:${AWS::Region}:${AWS::AccountId}:*" }
-                                    ]
-                                },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "personalize:GetRecommendations"
-                                    ],
-                                    "Resource": {
-                                        "Fn::Sub": "arn:aws:personalize:${AWS::Region}:${AWS::AccountId}:campaign/${CampaignName}"
-                                    }
-                                }
-                            ]
-                        },
-                        "PolicyName": "segment-kinesis-handler-policy"
-                    }
-                ],
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
-                ],
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
                         }
                     ]
                 }

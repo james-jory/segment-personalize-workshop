@@ -350,13 +350,13 @@ Scroll down to the "Job parameters" section. This is where we will specify the j
 
 ![Glue Job Parameters](images/GlueRunJobParams.png)
 
-Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. It may take a few minutes to start the execution of your job and several minutes to complete.
+Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. It may take a few minutes to start the execution of your job and several minutes to complete. Once your job starts executing, you can also view the log output in CloudWatch > Logs > `/aws-glue/jobs/output` while it is running.
 
 When the job completes click the "X" in the upper right corner of the the page to exit the job script editor.
 
 ### Verify CSV Output File
 
-Browse to the S3 service page in the AWS console and find the bucket with a name starting with `personalize-data-...`. Click on the bucket name. If the job completed successfully you should see a folder named "transformed". Click on "transformed" and you should see the output file created by the ETL job.
+Browse to the S3 service page in the AWS console and find the bucket with a name starting with `personalize-data-...`. Click on the bucket name. If the job completed successfully you should see a folder named "transformed". Click on "transformed" and you should see the output file created by the ETL job. If the file is missing or is empty then the job likely experienced a problem. You can review the job's log under CloudWatch > Logs > `/aws-glue/jobs/output` to troubleshoot possible errors. Otherwise, you can skip the ETL step and upload a pre-generated CSV located in the [data/transformed](../data/transformed) directory of this repository (i.e. upload the pre-generated file to your `personalize-data-...` S3 bucket in the `transformed` folder using the AWS console).
 
 ![Glue Job Transformed File](images/GlueJobOutputFile.png)
 
