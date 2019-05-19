@@ -1,6 +1,6 @@
+# Personalize Workshop Exercise 4
 
-Personalize Workshop Exercise 4
-Exercise 4 - Activating Recommendations using Segment Personas
+## Exercise 4 - Activating Recommendations using Segment Personas
 
 Overview After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the GetRecommendations API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
@@ -18,7 +18,8 @@ Exercise Preparation If you haven't already cloned this repository to your local
 
 
     git clone https://github.com/james-jory/segment-personalize-workshop.git
-Part 1 - Create an Event Processing Lambda Function
+
+## Part 1 - Create an Event Processing Lambda Function
 
 
 ![Exercise 4 Architecture](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558234881757_Blank+Diagram.jpeg)
@@ -192,7 +193,7 @@ Finally, you will need to add two more environment variables to your Lambda.  Th
 
 Your lambda is now ready to receive events from Segment!  In the next section, you will enable Segment to call your Lambda and send it events.
 
-Part 2 - Setting up Your Segment Destination
+## Part 2 - Setting up Your Segment Destination
 
 In this section you are going to connect your new Lambda event handler to Segment, via the Segment Personalize Destination.  This will enable events to flow to your Lambda and then to Personalize.
 
@@ -306,7 +307,7 @@ You will need to set the External ID that Segment will pass to IAM when invoking
 Your destination is now ready to process events.  In the next section, you will test out your new endpoint.
 
 
-Part 3 - Filtering Recommendations using Customer Profile Traits
+## Part 3 - Filtering Recommendations using Customer Profile Traits
 
 For this final step, you will test your new recommendations endpoint and its synchronization with your user profiles inside of Personas.
 
