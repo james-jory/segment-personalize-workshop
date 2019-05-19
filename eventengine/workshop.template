@@ -47,7 +47,7 @@
                                 }
                             ]
                         },
-                        "PolicyName": "glue-execution-policy"                        
+                        "PolicyName": "glue-execution-policy"
                     }
                 ],
                 "ManagedPolicyArns": [
@@ -129,7 +129,107 @@
                                 }
                             ]
                         },
-                        "PolicyName": "segment-kinesis-policy"                        
+                        "PolicyName": "segment-kinesis-policy"
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "arn:aws:iam::595280932656:root"
+                            },
+                            "Action": "sts:AssumeRole",
+                            "Condition": {
+                                "StringEquals": {
+                                    "sts:ExternalId": { "Ref": "SegmentSecretId" }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+
+        "SegmentPersonalizeLambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "personalize:*"
+                                    ],
+                                    "Resource": [
+                                        "*",
+                                        { "Fn::Sub": "arn:aws:personalize-events:${AWS::Region}:${AWS::AccountId}:*" }
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "personalize:GetRecommendations"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:personalize:${AWS::Region}:${AWS::AccountId}:campaign/${CampaignName}"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "segment-personalize-lambda-policy"
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+
+        "SegmentExecutePersonalizeLambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "lambda:InvokeFunction"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function/*"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "segment-execute-lambda-policy"
                     }
                 ],
                 "AssumeRolePolicyDocument": {
@@ -181,7 +281,7 @@
                                 }
                             ]
                         },
-                        "PolicyName": "personalize-execution-policy"                        
+                        "PolicyName": "personalize-execution-policy"
                     }
                 ],
                 "ManagedPolicyArns": [
@@ -240,7 +340,7 @@
                                 }
                             ]
                         },
-                        "PolicyName": "segment-kinesis-handler-policy"                        
+                        "PolicyName": "segment-kinesis-handler-policy"
                     }
                 ],
                 "ManagedPolicyArns": [
