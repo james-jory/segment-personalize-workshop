@@ -14,7 +14,7 @@
         },
         "SegmentLambdaDestinationFunctionName": {
             "Type": "String",
-            "Default": "SegmentLambdaDestinationFunction",
+            "Default": "SegmentPersonalizeDestinationHandler",
             "Description": "Enter name of the Lambda function to be called by Segment for the Personalize destination."
         },
         "SegmentSecretId": {
@@ -223,9 +223,11 @@
                                     "Action": [
                                         "lambda:InvokeFunction"
                                     ],
-                                    "Resource": {
-                                        "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function/*"
-                                    }
+                                    "Resource": [
+                                      {
+                                        "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SegmentLambdaDestinationFunctionName}"
+                                      }
+                                    ]
                                 }
                             ]
                         },
