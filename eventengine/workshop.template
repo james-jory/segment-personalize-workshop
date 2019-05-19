@@ -7,15 +7,20 @@
             "Default": "SegmentDestinationStream",
             "Description": "Enter name for Kinesis stream written to by Segment as a destination."
         },
-        "SegmentSecretId": {
-            "Type": "String",
-            "Default": "123456789",
-            "Description": "Enter Segment Secret ID that should be used for External ID in cross-account trust policy."
-        },
         "CampaignName": {
             "Type": "String",
             "Default": "segment-workshop-campaign",
             "Description": "Enter the name of the Personalize Campaign to use for fetching recommendations."
+        },
+        "SegmentLambdaDestinationFunctionName": {
+            "Type": "String",
+            "Default": "SegmentLambdaDestinationFunction",
+            "Description": "Enter name of the Lambda function to be called by Segment for the Personalize destination."
+        },
+        "SegmentSecretId": {
+            "Type": "String",
+            "Default": "123456789",
+            "Description": "Enter Segment Secret ID that should be used for External ID in cross-account trust policy."
         }
     },
     "Resources": {
@@ -35,6 +40,7 @@
                                         "s3:PutObject"
                                     ],
                                     "Resource": [
+                                        "arn:aws:s3:::segment-personalize-data/segment-logs/*",
                                         { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/raw-events/events.json*" },
                                         { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/transformed/*" }
                                     ]
@@ -56,6 +62,48 @@
                                 "Service": "glue.amazonaws.com"
                             },
                             "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
+        "SegmentLambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "lambda:InvokeFunction"
+                                    ],
+                                    "Resource": {
+                                        "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${SegmentLambdaDestinationFunctionName}"
+                                    }
+                                }
+                            ]
+                        },
+                        "PolicyName": "segment-lambda-policy"
+                    }
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "arn:aws:iam::595280932656:root"
+                            },
+                            "Action": "sts:AssumeRole",
+                            "Condition": {
+                                "StringEquals": {
+                                    "sts:ExternalId": { "Ref": "SegmentSecretId" }
+                                }
+                            }
                         }
                     ]
                 }
