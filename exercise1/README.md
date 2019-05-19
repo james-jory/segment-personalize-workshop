@@ -188,6 +188,7 @@ Add each write key to the appropriate variable entry in the script (you will not
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142493005_image.png)
 
+***TODO: UPDATE WITH RUNNING SCRIPT IN CLOUD9***
 
 In your terminal, run the script:
 
