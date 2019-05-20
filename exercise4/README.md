@@ -241,12 +241,9 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 
 
 7. Open the AWS management console in another tab or window.
-8. Go to Services > Lambdas.
-
+8. Go to Services > Lambdas > Functions.
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232440191_image.png)
-
-
 
 9. Click on the link for the Lambda you built earlier.
 10. At the top of the screen, you will see the ARN for your Lambda.
