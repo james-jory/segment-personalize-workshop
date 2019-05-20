@@ -1,11 +1,6 @@
 
-<<<<<<< HEAD
-# **Personalize Workshop Exercise 4**
-# **Exercise 4 - Activating Recommendations using Segment Personas**
-=======
 # Personalize Workshop Exercise 4
 ## Exercise 4 - Activating Recommendations using Segment Personas
->>>>>>> Exercise 4 formatting changes
 
 **Overview** After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
