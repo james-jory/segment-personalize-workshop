@@ -53,4 +53,4 @@ WITH SERDEPROPERTIES (
   "mapping.invited_user"="Invited User?",
   "mapping.referrering_domain"="Referrering Domain"
   )
-LOCATION 's3://segment-personalize-data/segment-logs/';
+LOCATION 's3://segment-personalize-workshop/segment-logs/';

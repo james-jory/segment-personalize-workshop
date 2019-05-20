@@ -35,10 +35,21 @@
                                         "s3:PutObject"
                                     ],
                                     "Resource": [
+                                        "arn:aws:s3:::segment-personalize-workshop/segment-logs/*",
                                         "arn:aws:s3:::segment-personalize-data/segment-logs/*",
                                         { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/raw-events/events.json*" },
                                         { "Fn::Sub": "arn:aws:s3:::personalize-data-${AWS::AccountId}/transformed/*" }
                                     ]
+                                },
+                                {
+                                    "Action": [
+                                        "s3:ListBucket"
+                                    ],
+                                    "Resource": [
+                                        "arn:aws:s3:::segment-personalize-workshop",
+                                        "arn:aws:s3:::segment-personalize-data"
+                                    ],
+                                    "Effect": "Allow"
                                 }
                             ]
                         },
@@ -212,6 +223,27 @@
                 }
             }
         },
+        "PersonalizeS3RoleForLab": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/service-role/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "personalize.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                }
+            }
+        },
         "PersonalizeDataBucket": {
             "Type" : "AWS::S3::Bucket",
             "Properties" : {
@@ -265,4 +297,4 @@
             }
         }
     }
- }
+}

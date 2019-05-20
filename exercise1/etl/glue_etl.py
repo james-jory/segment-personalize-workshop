@@ -17,7 +17,7 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 # Load JSON files into dynamic frame.
-datasource0 = glueContext.create_dynamic_frame_from_options("s3", {'paths': ["s3://segment-personalize-data/segment-logs"], 'recurse':True}, format="json")
+datasource0 = glueContext.create_dynamic_frame_from_options("s3", {'paths': ["s3://segment-personalize-workshop/segment-logs"], 'recurse':True}, format="json")
 print("Input file total record count: ", datasource0.count())
 
 # Filters the JSON documents that we want included in the output CSV.
