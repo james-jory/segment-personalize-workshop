@@ -1,7 +1,7 @@
 # Exercise 4 Updates for NYC Workshop
 
 # **Personalize Workshop Exercise 4**
-## **Exercise 4 - Activating Recommendations using Segment Personas**
+# **Exercise 4 - Activating Recommendations using Segment Personas**
 
 **Overview** After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
@@ -144,7 +144,7 @@ The `trackingId` function argument in your Lambda code identifies the Personaliz
 33. Click the "Create event tracker" button.
 
 
-![Personalize Event Trackers](https://github.com/james-jory/segment-personalize-workshop/raw/new-exercise-4/exercise3/images/PersonalizeCreateTracker.png)
+![Personalize Event Trackers](images/PersonalizeCreateTracker.png)
 
 
 
@@ -158,7 +158,7 @@ The `trackingId` function argument in your Lambda code identifies the Personaliz
 The Event Tracker's tracking ID is displayed on the following page and is also available on the Event Tracker's detail page.
 
 
-36. Copy this value to your clipboard.
+36. Copy this value to your clipboard and **be sure to press the "Finish" button**.
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281842051_image.png)
@@ -168,7 +168,7 @@ The Event Tracker's tracking ID is displayed on the following page and is also a
 37. Return to your Lambda function.
 38. Create a new key called `personalize_tracking_id`.
 39. Paste the Event Tracker’s tracking ID into the value field.
-40. Scroll to the top of the page and click the Save button to save your changes.
+40. Click the Save button at the top of the page to save your changes.
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281914584_image.png)
@@ -392,7 +392,7 @@ This is also where you may see a permissions error - this most likely means that
 
 
 
-## **Part 3 - Filtering Recommendations using Customer Profile Traits**
+## **Part 3 - Activating Recommendations using Customer Profile Traits**
 
 For this final step, you will test your new recommendations endpoint and its synchronization with your user profiles inside of Personas.
 
