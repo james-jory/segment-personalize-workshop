@@ -29,29 +29,69 @@ For this exercise we will walk you through how to setup an S3 destination in you
 
 > The Segment Amazon S3 destination is just one method for collecting historical training data for Personalize. If you're already using [Segment's Amazon Redshift Data Warehouse destination](https://segment.com/docs/destinations/redshift/), you can easily extract (or unload) data from your Redshift instance as a CSV suitable for uploading into Personalize. See the [sql/redshift_unload_as_csv.sql](sql/redshift_unload_as_csv.sql) file.
 
-### Exercise Preparation
+**Exercise Preparation**
+If you have not already cloned this repository to your local machine, do so now.
 
-If you haven't already cloned this repository to your local machine, do so now.
 
-```bash
-git clone https://github.com/james-jory/segment-personalize-workshop.git
-```
+    git clone https://github.com/james-jory/segment-personalize-workshop.git
 
-Claim your Segment Workspace and Event Engine code:
+**Claim your Segment Workspace**
+For the live workshop exercises, Segment has provisioned 80 workspaces for the workshop.  If you are doing this workshop after the live event, you will need a new Business Tier workspace with Personas enabled from Segment, or you will need to use your existing Segment workspace. If you do not have one, please contact your Segment sales representative at https://segment.com/contact/sales/.
 
-[Segment Workspaces](https://docs.google.com/spreadsheets/d/1SyEDxLmquN96tsv-dhrOhduRLilWjITQyCBXCcA73U4/edit?usp=sharing)
+To get your workshop workspace:
+
+
+1. Open the Google Sheet at [Segment Workspaces](https://docs.google.com/spreadsheets/d/1SyEDxLmquN96tsv-dhrOhduRLilWjITQyCBXCcA73U4/edit?usp=sharing)
+2. Find an unclaimed workspace
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558297225659_image.png)
+
+
+
+3. Claim your shiny new Segment workspace by putting your name in the appropriate fields, please.
 
 ## Part 1 - Set up Your Segment Workspace
 
-Go to https://app.segment.com and log in as:
+After you have claimed your workspace, there are a couple of steps you need to follow to get it ready to start the workshop.
 
 
-    username: igor+awsmlworkshop@segment.com
-    password: <will be on the whiteboard>
+1. Go to [https://app.segment.com](https://app.segment.com/).
+2. Make sure you select the “Password” login radio button.
+3. Log in as:
 
-Select your workspace. For this workshop, you will need to have a Segment Business Tier workspace that has Personas provisioned.  
+```
+username: igor+awsmlworkshop@segment.com
+password: <will be on the whiteboard>
+```
 
-If you are reading this document after the workshop, please contact your Segment sales representative to get set up with a demo workspace with Personas and Business Tier.
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558297663348_image.png)
+
+
+
+4. Click the “Log In” button.
+5. Find the workspace name you claimed in the spreadsheet.
+6. Click the tile with the name you claimed.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558298143343_image.png)
+
+
+
+7. Click on the Settings gear in the bottom left corner of the screen that appears.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558298296954_image.png)
+
+
+
+8. Change the name of the workspace to something you will remember, so that you can find your workspace more easily in case you have to log back in during or after the workshop.
+9. Add `igor+awsmlworkshop@segment.com` in the Incident Contact section.
+10. Click the “Save Changes” button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558298453353_image.png)
+
 
 ## Part 2 - Create Segment Sources
 
@@ -161,48 +201,143 @@ As mentioned above, we won't be testing actually pushing data through the S3 des
 
 ## Part 5 - Send Test Data Into Your Segment Workspace
 
-This step will pre-populate simulated event data into your Segment instance, your S3 bucket, and Personas.  This will be needed in later steps when configuring Personalize to send recommendations to Personas and your marketing tools.
+In this step you will pre-populate simulated event data into your Segment instance, your S3 bucket, and Personas.
 
-Because events are synchronized from Segment to S3 on a batch basis, we will also give you a pre-populated initial training set to save time, in the next step.  You will need some data to be populated in Segment however, since this will allow you to create recommendations based on (simulated) user activity.
+The data you pre-populate here will be *required* in later steps when configuring Personalize to send recommendations to Personas and your marketing tools.
 
-Open the segment-event-generator.py file in the ./data folder of the workshop project.
+Because events are synchronized from Segment to S3 on a batch basis, we will also give you a pre-populated initial training set to save time, in the next part.
 
+You will need some data to be populated in Segment however, since this will allow you to create recommendations based on (simulated) user activity later on.
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142493005_image.png)
-
-
-Then in your Segment workspace, get the write keys for the web, android, and ios sources you created earlier.  You can get these by clicking on each source.
+This part can be choose your own adventure, though we strongly recommend using the Clooud9 option to avoid Python package hell.  Let’s start with Cloud9.
 
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142616735_image.png)
+1. Go to your AWS Console.
+2. Under the Services dropdown, find Cloud9
+3. Click the “Create Environment” button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299104773_image.png)
+
+
+
+4. Give your environment a name.
+5. Click the “Next Step” button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299167074_image.png)
+
+
+Cloud9 terminals run in VPCs like all EC2 instances.
+
+
+6. Change the Platform radio button to “Ubuntu Server”.  This is essential for the Python environment steps below to work properly.
+7. Change the Cost-saving setting to “After four hours”.   This sets a longer timeout for the inactivity monitor.
+8. Click the “Create new VPC” button.  This will open a new tab or browser window, depending on your browser.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299428166_image.png)
+
+
+
+8. Select the default, VPC with a single public subnet.
+9. Click the Select button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299502361_image.png)
+
+
+
+10. Name your subnet.
+11. Click the Create VPC button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299573199_image.png)
+
+12. Go back to the Cloud9 configuration wizard in the previous screen or tab.
+13. Your VPC and subnet should already be automatically selected.  If they are not, click the refresh button next to the VPC dropdown.
+14. Select your VPC.
+15. Click the Next Step button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299736195_image.png)
+
+
+
+16. Click the “Create Environment” button.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299781230_image.png)
+
+
+
+17. You will be forwarded to a screen that shows your remote IDE which provides a terminal in which you can execute terminal commands.  If you are running an ad blocker in your browser, you will need to disable it for this URL because some ad blockers prevent the Cloud9 service from running in the browser.
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299984070_image.png)
+
+
+
+18. Welcome, l33t h4x0r!
+
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558300244295_image.png)
+
+
+Keep this window or tab open, or at least save the URL to your instance.  You will need to use this one more time later in the workshop to send events into Segment.  Or like hack a mainframe or something.
+
+
+19. You will need to run the following commands in the terminal window (you are in Ubuntu, right?)
+
+```
+git clone git@github.com:james-jory/segment-personalize-workshop.git
+pip install python-dateutil --upgrade
+pip install analytics-python
+```
+
+20. Open the segment-event-generator.py file in the ./data folder of the workshop project.
+
+```
+cd segment-personalize-workshop/data
+vi segment-event-generator.py
+```
+
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558301096176_image.png)
+
+
+
+21. Go to your Segment workspace window.
+22. You will need the write keys for the web, android, and ios sources you created earlier. You can get these by clicking on each source as shown below.
+
+
+![](https://camo.githubusercontent.com/804a4e22b35ff233bfe829df4609cf81c7c3562c/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f353339413932374635444137383842353537434530354546353145383232314631443744303244303136423643413239384644354635353330344238434132385f313535313134323631363733355f696d6167652e706e67)
 
 
 The write key for the source is in the next screen:
 
+![](https://camo.githubusercontent.com/30d8382284c7b9902629a461f029e7e868b0bd95/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f353339413932374635444137383842353537434530354546353145383232314631443744303244303136423643413239384644354635353330344238434132385f313535313134323731363836305f696d6167652e706e67)
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142716860_image.png)
-
-
-Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
+23. Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
 
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142493005_image.png)
+![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558301096176_image.png)
 
-***TODO: UPDATE WITH RUNNING SCRIPT IN CLOUD9***
 
-In your terminal, run the script:
+
+24. Save your changes (escape key > colon key > `wq` in the vi terminal).   Now you can push events into your Segment sources.
+
+
+25. In your Cloud9 terminal, run the script:
 
 ```
-python3 segment-event-generator.py 2019-02-26
+python segment-event-generator.py 2019-05-19
 ```
 
-This will generate two days worth of interaction data in your Segment instance.  You can see your events by clicking on each of your sources and looking at the Debugger view:
+This will generate two days worth of interaction data in your Segment instance.  If you are using this after the date shown above, your should change the date to be at least one day prior to today so that you get a long enough run of historical data.
 
 
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1551142994936_image.png)
+26. Validate you can see your events by clicking on each of your sources and looking at the Debugger tab.  You should see events in all of the sources you configured above.  Keep your Cloud9 terminal open for later.
 
-
-This view shows the last 50 real time events for that source.  If you have events in all of your sources, you are ready to go to the next step.
 
 ## Part 6 - Explore Workshop Test Data
 
@@ -220,7 +355,7 @@ CREATE DATABASE IF NOT EXISTS default;
 
 ![Create Athena Database](images/AthenaCreateDatabase.png)
 
-Next let's create a table in Athena that points to the historical data in S3. We have written the DDL statement for you. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the "CREATE EXTERNAL TABLE..." statement. One important aspect of this DDL statement is that there are several field name mapping statements in the SERDEPROPERTIES section. These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data. 
+Next let's create a table in Athena that points to the historical data in S3. We have written the DDL statement for you. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the "CREATE EXTERNAL TABLE..." statement. One important aspect of this DDL statement is that there are several field name mapping statements in the SERDEPROPERTIES section. These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data.
 
 When you're ready, press the "Run query" button to execute the statement. This will create the table in the Glue Data Catalog. Now you are ready to execute queries against the compressed JSON files. Trying inspecting the data with a few queries.
 
@@ -342,7 +477,7 @@ While still in the Glue service console and the job listed, click the "Run job" 
 
 ![Glue Job Parameters](images/GlueRunJobDialog.png)
 
-Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. You copy the bucket name to your clipboard from the S3 service page in the tab/window you opened above. 
+Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. You copy the bucket name to your clipboard from the S3 service page in the tab/window you opened above.
 
 | Key                  | Value                                          |
 | -------------------- | ---------------------------------------------- |

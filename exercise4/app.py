@@ -68,7 +68,7 @@ def lambda_handler(event, context):
             # You will want to modify this part to match the event props
             # that come from your events - Personalize will want the sku or
             # item ids for what your users are browsing or purchasing
-            properties = { "itemId": event["properties"]["sku"] }
+            properties = { "itemId": event["properties"]["sku"], "eventValue": "1" }
 
             response = personalize_events.put_events(
                 trackingId = os.environ['personalize_tracking_id'],
