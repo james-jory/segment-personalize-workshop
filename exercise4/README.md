@@ -308,7 +308,7 @@ You will also need to set the External ID that Segment will pass to IAM when inv
 
 
 28. Click on Other Settings > External ID.
-29. Type in `12345678` to the text box.
+29. Type in `123456789` into the text box.
 30. Click the Save button.
 
 
@@ -357,7 +357,7 @@ Your destination is now ready to process events.  In the next section, you will 
 39. Paste the following JSON into the Event Tester.
 40. Make sure the JSON tab is selected at the top, you do not need to select an event type.
 
-
+```
     {
       "messageId": "test-message-33dlvn",
       "timestamp": "2019-02-25T15:55:05.905Z",
@@ -370,6 +370,7 @@ Your destination is now ready to process events.  In the next section, you will 
       "anonymousId": "2941404340-anon",
       "event": "Product Clicked"
     }
+```
 
 If all goes well, you will see a screen that look like this:
 
