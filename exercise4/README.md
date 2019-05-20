@@ -1,7 +1,11 @@
-# Exercise 4 Updates for NYC Workshop
 
+<<<<<<< HEAD
 # **Personalize Workshop Exercise 4**
 # **Exercise 4 - Activating Recommendations using Segment Personas**
+=======
+# Personalize Workshop Exercise 4
+## Exercise 4 - Activating Recommendations using Segment Personas
+>>>>>>> Exercise 4 formatting changes
 
 **Overview** After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
@@ -17,8 +21,10 @@ Once your recommendations are updated on a user profile, your marketing, analyti
 
 **Exercise Preparation** If you haven't already cloned this repository to your local machine, do so now.
 
+```
+git clone https://github.com/james-jory/segment-personalize-workshop.git
+```
 
-    git clone https://github.com/james-jory/segment-personalize-workshop.git
 ## **Part 1 - Create an Event Processing Lambda Function**
 
 
@@ -58,28 +64,20 @@ First you will create a Lambda function that gets called by the Segment Personal
 
 The source code for the function is provided in the workshop code home directory in `/exercise4/app.py`.  For this function, you will use a Lambda .zip file bundle that you will need to make the code work.  This is located in the workshop home directory in `/exercise4/function.zip`.
 
-
 14. Click the Upload button.
-
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238459149_image.png)
 
-
-
 15. Navigate to the directory where you cloned the git repo and go to `segment-personalize-workshop/exercise4/function.zip`
-
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238600761_image.png)
 
-
-
 16. Click the Open button.
-17. Click the Save button at the top of the screen.  It may take a few moments to complete this operation as your .zip file is uploaded.  When completed, the function code should look something like this:
+17. Click the Save button at the top of the screen.  It may take a few moments to complete this operation as your .zip file is uploaded.  
 
+When completed, the function code should look something like this:
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238740999_image.png)
-
-
 
 18. Next we need to register a Lambda Layer to wire up the Personalize API with the Python SDK.  This is only required while Personalize is in Beta.  You created the layer in the previous exercise.
 19. Click on "Layers" below the function name in the Lambda Designer panel.
@@ -121,20 +119,21 @@ Next, we need to add environment variables so the function can pass recommendati
 
 Another critical dependency in your function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint so that new event data can be added to the training set for your Personalize solution.  This will enable the following Python code to work properly when sending events to Personalize:
 
-
-    response = personalize_events.put_events(
-          trackingId = os.environ['personalize_tracking_id'],
-          userId = userId,
-          sessionId = event['anonymousId'],
-          eventList = [
-              {
-                  "eventId": event['messageId'],
-                  "sentAt": int(dp.parse(event['timestamp']).strftime('%s')),
-                  "eventType": event['event'],
-                  "properties": json.dumps(properties)
-              }
-          ]
-      )
+```
+response = personalize_events.put_events(
+      trackingId = os.environ['personalize_tracking_id'],
+      userId = userId,
+      sessionId = event['anonymousId'],
+      eventList = [
+          {
+              "eventId": event['messageId'],
+              "sentAt": int(dp.parse(event['timestamp']).strftime('%s')),
+              "eventType": event['event'],
+              "properties": json.dumps(properties)
+          }
+      ]
+  )
+```
 
 The `trackingId` function argument in your Lambda code identifies the Personalize Event Tracker which should handle the events you submit. This value is passed to your Lambda function as another environment variable.
 
@@ -145,8 +144,6 @@ The `trackingId` function argument in your Lambda code identifies the Personaliz
 
 
 ![Personalize Event Trackers](images/PersonalizeCreateTracker.png)
-
-
 
 34. Enter a name for your Event Tracker.
 35. Click the Next button.
@@ -211,7 +208,7 @@ Finally, you will need to add two more environment variables to your Lambda.  Th
 
 Your lambda is now ready to receive events from Segment!  In the next section, you will enable Segment to call your Lambda and send it events.
 
-## **Part 2 - Setting up Your Segment Destination**
+## Part 2 - Setting up Your Segment Destination
 
 In this section you are going to connect your new Lambda event handler to Segment, via the Segment Personalize Destination.  This will enable events to flow to your Lambda and then to Personalize.
 
@@ -358,7 +355,7 @@ Your destination is now ready to process events.  In the next section, you will 
 40. Make sure the JSON tab is selected at the top, you do not need to select an event type.
 
 ```
-    {
+{
       "messageId": "test-message-33dlvn",
       "timestamp": "2019-02-25T15:55:05.905Z",
       "type": "track",
@@ -369,7 +366,7 @@ Your destination is now ready to process events.  In the next section, you will 
       "userId": "2941404340",
       "anonymousId": "2941404340-anon",
       "event": "Product Clicked"
-    }
+}
 ```
 
 If all goes well, you will see a screen that look like this:
@@ -403,9 +400,9 @@ In Exercise 1, you ran a Python script to populate data into your Segment instan
 2. `cd` to the workshop repo directory `segment-personalize-workshop/data`
 3. Run the Python Script in your terminal:
 
-
-    python segment-event-generator.py 2019-05-19
-
+```
+python segment-event-generator.py 2019-05-19
+```
 
 4. Go to your Segment workspace.
 5. Click on the `website-prod` source.
