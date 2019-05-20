@@ -372,7 +372,7 @@ In some cases, you may get timeout errors from this screen.  This is generally c
 This is also where you may see a permissions error - this most likely means that you entered an incorrect external id, or an incorrect IAM role ID.  Check those, and try sending a test event again.
 
 
-41. Click on Sources > personas-event-source.
+41. In your Segment workspace, click on Sources > personas-event-source.
 42. Select the Debugger tab.
 43. Your Lambda should have sent an event with product recommendations into your source:
 
