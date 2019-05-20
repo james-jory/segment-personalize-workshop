@@ -51,19 +51,19 @@ To get your workshop workspace:
 
 3. Claim your shiny new Segment workspace by putting your name in the appropriate fields, please.
 
-## Part 1 - Set up Your Segment Workspace**
+## Part 1 - Set up Your Segment Workspace
 
-After you have claimed your workspace, there are couple steps you need to follow to get it ready to start the workshop.
+After you have claimed your workspace, there are a couple of steps you need to follow to get it ready to start the workshop.
 
 
 1. Go to [https://app.segment.com](https://app.segment.com/).
 2. Make sure you select the “Password” login radio button.
 3. Log in as:
 
-
-    username: igor+awsmlworkshop@segment.com
-    password: <will be on the whiteboard>
-
+```
+username: igor+awsmlworkshop@segment.com
+password: <will be on the whiteboard>
+```
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558297663348_image.png)
 
@@ -199,7 +199,7 @@ Detailed instructions for configuring an S3 destination can be found on Segment'
 
 As mentioned above, we won't be testing actually pushing data through the S3 destination in this workshop due to time limitations. Instead, we will upload a dataset in the next part.
 
-## Part 5 - Send Test Data Into Your Segment Workspace**
+## Part 5 - Send Test Data Into Your Segment Workspace
 
 In this step you will pre-populate simulated event data into your Segment instance, your S3 bucket, and Personas.
 
@@ -289,18 +289,18 @@ Keep this window or tab open, or at least save the URL to your instance.  You wi
 
 19. You will need to run the following commands in the terminal window (you are in Ubuntu, right?)
 
-
-    git clone git@github.com:james-jory/segment-personalize-workshop.git
-    pip install python-dateutil --upgrade
-    pip install analytics-python
-
+```
+git clone git@github.com:james-jory/segment-personalize-workshop.git
+pip install python-dateutil --upgrade
+pip install analytics-python
+```
 
 20. Open the segment-event-generator.py file in the ./data folder of the workshop project.
 
-
-    cd segment-personalize-workshop/data
-    vi segment-event-generator.py
-
+```
+cd segment-personalize-workshop/data
+vi segment-event-generator.py
+```
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558301096176_image.png)
 
@@ -329,8 +329,9 @@ The write key for the source is in the next screen:
 
 25. In your Cloud9 terminal, run the script:
 
-
-    python segment-event-generator.py 2019-05-19
+```
+python segment-event-generator.py 2019-05-19
+```
 
 This will generate two days worth of interaction data in your Segment instance.  If you are using this after the date shown above, your should change the date to be at least one day prior to today so that you get a long enough run of historical data.
 
