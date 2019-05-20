@@ -1,12 +1,13 @@
-# Personalize Workshop Exercise 4
+# Exercise 4 Updates for NYC Workshop
 
-## Exercise 4 - Activating Recommendations using Segment Personas
+# **Personalize Workshop Exercise 4**
+## **Exercise 4 - Activating Recommendations using Segment Personas**
 
-Overview After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the GetRecommendations API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
+**Overview** After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
-For search-personalization recipes, the PersonalizeRanking API re-ranks a list of recommended items based on a specified query.
+For search-personalization recipes, the [PersonalizeRanking](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_PersonalizeRanking.html) API re-ranks a list of recommended items based on a specified query.
 
-In Exercise 3 you learned how to access your Personalize solution directly in applications, via a Lambda based API endpoint.
+In [Exercise 3](https://github.com/james-jory/segment-personalize-workshop/blob/master/exercise3) you learned how to access your Personalize solution directly in applications, via a Lambda based API endpoint.
 
 In this exercise, you will configure the Segment Personalize Destination, and then deploy a Lambda that can process your Segment events via that destination.  
 
@@ -14,12 +15,11 @@ This Lambda function will allow you to send updated events to keep your Personal
 
 Once your recommendations are updated on a user profile, your marketing, analytics, and data teams can use these product recommendations in their campaign management and analytics tools with no additional work.  
 
-Exercise Preparation If you haven't already cloned this repository to your local machine, do so now.
+**Exercise Preparation** If you haven't already cloned this repository to your local machine, do so now.
 
 
     git clone https://github.com/james-jory/segment-personalize-workshop.git
-
-## Part 1 - Create an Event Processing Lambda Function
+## **Part 1 - Create an Event Processing Lambda Function**
 
 
 ![Exercise 4 Architecture](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558234881757_Blank+Diagram.jpeg)
@@ -29,29 +29,34 @@ First you will create a Lambda function that gets called by the Segment Personal
 
 
 1. Navigate to Services > Lambda in your AWS Console.
-2. Click ‘Create Function’ (see image below).
+2. In the left navigation pane (you can expose this with the hamburger button in the top left of the screen), select Functions.
+3. Click ‘Create Function’ (see image below).
 
 
 ![Lambda Create Function](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaCreateFunction.png)
 
-3. Enter a name for your function: `SegmentPersonalizeDestinationHandler`.
-4. Specify Python 3.7 as the runtime.
-5. Select the role that contains the name `SegmentPersonalizeLambdaRole` in the Execution role section.
-6. Click ‘Create Function.’
+3. Select “Author from scratch” at the top of the screen.
+4. Enter a name for your function: `SegmentPersonalizeDestinationHandler`.
+5. Specify Python 3.7 as the runtime.
+6. Under Permissions, click “Choose or create an execution role.”
+7. Select “Use an existing role”.
+8. Select the role that contains the name `SegmentPersonalizeLambdaRole` in the Execution role section.
+9. Click ‘Create Function.’
 
 
-![Lambda Function Config](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaRecEndpointCreate.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558280851854_image.png)
 
 
 
 7. Scroll down to the "Function code" panel.
-8. Select ‘Upload a .zip file’.
+8. Change the Handler text box to read `app.lambda_handler` instead of `lambda_function.lambda_handler` (if you don’t do this an error message will appear after the next step).
+9. Select ‘Upload a .zip file’.
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238242052_image.png)
 
 
-The source code for the function is provided in the workshop code.  We have provided the source code for the function in `/exercise4/app.py` and a Lambda .zip file bundle that you will need to make the code work in `/exercise4/function.zip`.
+The source code for the function is provided in the workshop code home directory in `/exercise4/app.py`.  For this function, you will use a Lambda .zip file bundle that you will need to make the code work.  This is located in the workshop home directory in `/exercise4/function.zip`.
 
 
 9. Click the Upload button.
@@ -105,7 +110,7 @@ Next, we need to add environment variables so the function can pass recommendati
 
 
 
-23. Return to your Lambda function and scroll down to the "Environment variables" panel.
+23. Return to your Lambda function and scroll down to the "Environment variables" panel.  You may need to click on the function name in the Designer pane to expose the function environment variables.
 24. Add an environment variable with the key `personalize_campaign_arn`.
 25. Paste the Campaign ARN from your clipboard as the value.
 26. Scroll to the top of the page and click the Save button to save your changes.
@@ -114,7 +119,22 @@ Next, we need to add environment variables so the function can pass recommendati
 ![Lambda Campaign ARN Environment Variable](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaRecCampaignArn.png)
 
 
-Another critical dependency in your function is the ability to call the Personalize PutEvents API endpoint so that new event data can be added to the training set for your Personalize solution.
+Another critical dependency in your function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint so that new event data can be added to the training set for your Personalize solution.  This will enable the following Python code to work properly when sending events to Personalize:
+
+
+    response = personalize_events.put_events(
+          trackingId = os.environ['personalize_tracking_id'],
+          userId = userId,
+          sessionId = event['anonymousId'],
+          eventList = [
+              {
+                  "eventId": event['messageId'],
+                  "sentAt": int(dp.parse(event['timestamp']).strftime('%s')),
+                  "eventType": event['event'],
+                  "properties": json.dumps(properties)
+              }
+          ]
+      )
 
 The `trackingId` function argument in your Lambda code identifies the Personalize Event Tracker which should handle the events you submit. This value is passed to your Lambda function as another environment variable.
 
@@ -129,12 +149,10 @@ The `trackingId` function argument in your Lambda code identifies the Personaliz
 
 
 30. Enter a name for your Event Tracker.
-31. Select the pre-provisioned CloudWatch IAM role that contains `PersonalizeExecutionRole` .
-32. If the IAM role is not present, select "Enter a custom IAM role ARN" and paste the IAM ARN for the role (obtained from IAM service page for the role name like `personalize-module-PersonalizeExecutionRole-..`).
-33. Click the "Next" button to create the tracker.
+31. Click the Next button.
 
 
-![Personalize Event Tracker Config](https://github.com/james-jory/segment-personalize-workshop/raw/new-exercise-4/exercise3/images/PersonalizeEventTrackerConfig.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281742532_image.png)
 
 
 The Event Tracker's tracking ID is displayed on the following page and is also available on the Event Tracker's detail page.
@@ -143,7 +161,7 @@ The Event Tracker's tracking ID is displayed on the following page and is also a
 34. Copy this value to your clipboard.
 
 
-![Personalize Event Tracker Config](https://github.com/james-jory/segment-personalize-workshop/raw/new-exercise-4/exercise3/images/PersonalizeEventTrackerCreating.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281842051_image.png)
 
 
 
@@ -153,10 +171,10 @@ The Event Tracker's tracking ID is displayed on the following page and is also a
 38. Scroll to the top of the page and click the Save button to save your changes.
 
 
-![](https://segment.com/docs/destinations/amazon-personalize/images/LambdaEnvVariable.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281914584_image.png)
 
 
-Your Lambda will also need a key for the Segment source that will ingest events the Lambda sends back to Segment in order to update recommendations after user actions take place.
+Your Lambda will also need a key for the Segment source that will ingest events you will send back via the Lambda, in order to update recommendations after user actions take place.
 
 
 39. Go back to your Segment workspace tab or window.
@@ -174,7 +192,7 @@ Your Lambda will also need a key for the Segment source that will ingest events 
 45. Scroll to the top of the page and click the Save button to save your changes.
 
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558240462527_image.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282013045_image.png)
 
 
 Finally, you will need to add two more environment variables to your Lambda.  These are only required while Personalize is in Beta, and allow your Lambda to specify which region-specific API endpoints for Personalize your Lambda will use.
@@ -188,12 +206,12 @@ Finally, you will need to add two more environment variables to your Lambda.  Th
 51. Check that your Lambda Environment variables look like the image below.
 
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558225668283_image.png)
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282102471_image.png)
 
 
 Your lambda is now ready to receive events from Segment!  In the next section, you will enable Segment to call your Lambda and send it events.
 
-## Part 2 - Setting up Your Segment Destination
+## **Part 2 - Setting up Your Segment Destination**
 
 In this section you are going to connect your new Lambda event handler to Segment, via the Segment Personalize Destination.  This will enable events to flow to your Lambda and then to Personalize.
 
@@ -286,7 +304,7 @@ Segment will need execute permission to call your lambda from our service.  An e
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233476377_image.png)
 
 
-You will need to set the External ID that Segment will pass to IAM when invoking your Lambda.  This ID acts like a shared secret.  One has already been configured for you in the execution role.
+You will also need to set the External ID that Segment will pass to IAM when invoking your Lambda.  This ID acts like a shared secret.  One has already been configured for you in the execution role.
 
 
 28. Click on Other Settings > External ID.
@@ -297,40 +315,114 @@ You will need to set the External ID that Segment will pass to IAM when invoking
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233715513_image.png)
 
 
+Segment’s destination tries to find your Lambda in the us-west-2 AWS region by default.  Because your Lambda was configured in us-east-1, you will need to change this setting.
 
-31. Finally, you can turn on the Personalize destination by clicking the slider toggle at the top of the screen.
+
+1. Click on Other Settings > Region.
+2. Type in `use-east-1` in the text box.
+3. Click the Save button.
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558284031834_image.png)
+
+
+Because you will be running in debug mode in a few steps, we will enable debug logging in the Lambda here.
+
+
+1. Click on Other Settings > Log Type.
+2. Select “Tail”.
+3. Click the “Save” button.
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558288338858_image.png)
+
+
+
+1. Finally, you can turn on the Personalize destination by clicking the slider toggle at the top of the screen.
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233807669_image.png)
 
 
-Your destination is now ready to process events.  In the next section, you will test out your new endpoint.
+Your destination is now ready to process events.  In the next section, you will send a batch of events through your Lambda to show how you can process real-time events.  First, let’s make sure that your Lambda is ready to process events, by sending a test event via the Segment Event Tester.
 
 
-## Part 3 - Filtering Recommendations using Customer Profile Traits
+1. Click “Event Tester” in the left hand pane of your Amazon Personalize Settings screen.
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282533709_image.png)
+
+
+
+1. Paste the following JSON into the Event Tester.
+2. Make sure the JSON tab is selected at the top, you do not need to select an event type.
+
+
+    {
+      "messageId": "test-message-33dlvn",
+      "timestamp": "2019-02-25T15:55:05.905Z",
+      "type": "track",
+      "email": "test@example.org",
+      "properties": {
+        "sku": "ocean-blue-shirt"
+      },
+      "userId": "2941404340",
+      "anonymousId": "2941404340-anon",
+      "event": "Product Clicked"
+    }
+
+If all goes well, you will see a screen that look like this:
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558285258920_image.png)
+
+
+In some cases, you may get timeout errors from this screen.  This is generally caused by the Lambda being deployed slowly.  Re-try sending the event.
+
+This is also where you may see a permissions error - this most likely means that you entered an incorrect external id, or an incorrect IAM role ID.  Check those, and try sending a test event again.
+
+
+3. Click on Sources > personas-event-source.
+4. Select the Debugger tab.
+5. Your Lambda should have sent an event with product recommendations into your source:
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558305444088_image.png)
+
+
+
+## **Part 3 - Filtering Recommendations using Customer Profile Traits**
 
 For this final step, you will test your new recommendations endpoint and its synchronization with your user profiles inside of Personas.
 
-
-1. Go to your Segment workspace
-2. Click the Personas orb
+In Exercise 1, you ran a Python script to populate data into your Segment instance.   You are going to run it again in this section, so that you can see how the whole event pipeline works.  
 
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233922497_image.png)
+1. Open your terminal window, or go to your Cloud9 terminal in your browser.
+2. cd to the workshop repo directory `segment-personalize-workshop/data`
+3. Run the Python Script in your terminal:
 
 
-
-3. In Exercise 2, you ran a python script to populate data into your Segment instance.  Run the Python Script again in your terminal:
-
-
-    python3 segment-event-generator.py 2019-02-26
+    python segment-event-generator.py 2019-05-19
 
 
-4. As events start to flow through Segment, you should start to see a list of recommended products from your Personalize solution appearing as traits on user Profiles in Personas.
-5. To see user traits, go to your Segment workspace
-6. Click the Personas Orb > Explorer tab
-7. Click on a user profile as shown below
-8. Under the user’s Custom traits tab you will see a `recommended_products` trait, which is kept updated by your Lambda!
+4. Go to your Segment workspace.
+5. Click on the `website-prod` source.
+6. Select the Debugger tab at the top of the screen.
+
+
+![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558283434807_image.png)
+
+
+As events are sent to the source by the Python script, you will see them appear in real-time in the Debugger view.  Segment is now forwarding events to the Personalize source you just built.
+
+As events start to flow through Segment, you should start to see a list of recommended products from your Personalize solution appearing as traits on user Profiles in Personas.
+
+
+1. To see user traits, go to your Segment workspace
+2. Click the Personas Orb > Explorer tab
+3. Click on a user profile as shown below
+4. Under the user’s Custom traits tab you will see a `recommended_products` trait, which is kept updated by your Lambda!
 
 
 ![](https://camo.githubusercontent.com/92e1822a74c7bd3469ee02dd501a801f3f54fbe9/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f313241353841393234303543353645384445393638453644453633423342464544314242383232454233343441354133333838303143384237313742434445425f313535313139343639313333335f696d6167652e706e67)
