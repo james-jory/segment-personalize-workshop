@@ -1,8 +1,9 @@
 
-# Personalize Workshop Exercise 4
-## Exercise 4 - Activating Recommendations using Segment Personas
+# Exercise 4 - Activating Recommendations using Segment Personas
 
-**Overview** After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
+## Overview
+
+After you create a campaign using Amazon Personalize, you are able to get two different types of recommendations, dependent on what recipe type was used to train the model. For user-personalization and related-items recipes, the [GetRecommendations](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_GetRecommendations.html) API returns a list of recommended items. For example, products or content can be recommended for users signed in to your website, or in marketing tools.
 
 For search-personalization recipes, the [PersonalizeRanking](https://docs.aws.amazon.com/personalize/latest/dg/API_RS_PersonalizeRanking.html) API re-ranks a list of recommended items based on a specified query.
 
@@ -14,7 +15,9 @@ This Lambda function will allow you to send updated events to keep your Personal
 
 Once your recommendations are updated on a user profile, your marketing, analytics, and data teams can use these product recommendations in their campaign management and analytics tools with no additional work.  
 
-**Exercise Preparation** If you haven't already cloned this repository to your local machine, do so now.
+## Exercise Preparation
+
+If you haven't already cloned this repository to your local machine, do so now.
 
 ```
 git clone https://github.com/james-jory/segment-personalize-workshop.git
@@ -37,17 +40,14 @@ First you will create a Lambda function that gets called by the Segment Personal
 ![Lambda Create Function](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaCreateFunction.png)
 
 4. Select “Author from scratch” at the top of the screen.
-5. Enter a name for your function: `SegmentPersonalizeDestinationHandler`.
+5. Enter the name for your function: `SegmentPersonalizeDestinationHandler`. ***You must use this name for your function since the pre-made IAM policy for calling your function from Segment expects this name.***
 6. Specify Python 3.7 as the runtime.
 7. Under Permissions, click “Choose or create an execution role.”
 8. Select “Use an existing role”.
-9. Select the role that contains the name `SegmentPersonalizeLambdaRole` in the Execution role section.
+9. Select the role that starts with the name `module-personalize-SegmentPersonalizeLambdaRole-...` in the "Existing role" dropdown.
 10. Click ‘Create Function.’
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558280851854_image.png)
-
-
+![Lambda Function Config](images/LambdaConfigFunction.png)
 
 11. Scroll down to the "Function code" panel.
 12. Change the Handler text box to read `app.lambda_handler` instead of `lambda_function.lambda_handler` (if you don’t do this an error message will appear after the next step).
@@ -81,8 +81,6 @@ When completed, the function code should look something like this:
 
 ![Lambda Layer](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaRecAddLayer.png)
 
-
-
 21. Select the Layer and the latest version and click the "Add" button.
 
 
@@ -100,7 +98,6 @@ Next, we need to add environment variables so the function can pass recommendati
 
 
 ![Personalize Campaign ARN](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/PersonalizeCampaignArn.png)
-
 
 
 27. Return to your Lambda function and scroll down to the "Environment variables" panel.  You may need to click on the function name in the Designer pane to expose the function environment variables.
@@ -369,7 +366,7 @@ If all goes well, you will see a screen that look like this:
 
 In some cases, you may get timeout errors from this screen.  This is generally caused by the Lambda being deployed slowly.  Re-try sending the event.
 
-This is also where you may see a permissions error - this most likely means that you entered an incorrect external id, or an incorrect IAM role ID.  Check those, and try sending a test event again.
+This is also where you may see a permissions error - this most likely means that you entered an incorrect external id, an incorrect IAM role ID, or your Lambda function is not named `SegmentPersonalizeDestinationHandler`.  Check those, and try sending a test event again.
 
 
 41. In your Segment workspace, click on Sources > personas-event-source.
