@@ -103,7 +103,7 @@ To obtain the IAM and S3 information we need to complete this form, we need to k
 
 1. Open up a new browser window or tab in your current console session by right-clicking on the "AWS" logo in the upper-left corner of the page and choosing "Open Link in New Tab" or "Open Link in New Window" (the menu options may be worded differently in the web browser you're using).
 2. In the __new tab/window that was opened__, browse to the IAM service page.
-3. Select "Roles" in the left navigation and find the IAM role with the name "module-personalize-PersonalizeExecutionRole-...".
+3. Select "Roles" in the left navigation and find the IAM role with the name "module-personalize-PersonalizeServiceRole-...".
 4. Click on this role name to display the role's detail page.
 5. The "Role ARN" is displayed at the top of the "Summary" section. Click on the copy icon displayed at the end of Role ARN to copy the ARN to your clipboard. 
 6. Switch browser tabs/windows back to the Personalize "Import user-item interaction data" form and paste the ARN into the "Custom IAM role ARN" field.
