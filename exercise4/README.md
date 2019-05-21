@@ -305,7 +305,7 @@ Segment’s destination tries to find your Lambda in the us-west-2 AWS region by
 
 
 31. Click on Other Settings > Region.
-32. Type in `use-east-1` in the text box.
+32. Type in `us-east-1` in the text box.
 33. Click the Save button.
 
 
