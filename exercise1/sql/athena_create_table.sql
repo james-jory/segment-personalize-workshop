@@ -1,3 +1,6 @@
+-- Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+-- SPDX-License-Identifier: MIT-0
+
 -- Demonstrates how to create a table in Athena that can be used
 -- to query event data written to S3 by Segment's S3 destination.
 -- This is helpful in exploring training data before being uploaded

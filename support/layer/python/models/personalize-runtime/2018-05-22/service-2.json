@@ -24,6 +24,7 @@
         {"shape":"InvalidInputException"},
         {"shape":"ResourceNotFoundException"}
       ],
+      "documentation":"<p>Re-ranks a list of recommended items for the given user. The first item in the list is deemed the most likely item to be of interest to the user.</p> <note> <p>The solution backing the campaign must have been created using a recipe of type PERSONALIZED_RANKING.</p> </note>",
       "idempotent":true
     },
     "GetRecommendations":{
@@ -38,6 +39,7 @@
         {"shape":"InvalidInputException"},
         {"shape":"ResourceNotFoundException"}
       ],
+      "documentation":"<p>Returns a list of recommended items. The required input depends on the recipe type used to create the solution backing the campaign, as follows:</p> <ul> <li> <p>RELATED_ITEMS - <code>itemId</code> required, <code>userId</code> not used</p> </li> <li> <p>USER_PERSONALIZATION - <code>itemId</code> optional, <code>userId</code> required</p> </li> </ul> <note> <p>Campaigns that are backed by a solution created using a recipe of type PERSONALIZED_RANKING use the API.</p> </note>",
       "idempotent":true
     }
   },
@@ -56,32 +58,58 @@
         "userId"
       ],
       "members":{
-        "campaignArn":{"shape":"Arn"},
-        "inputList":{"shape":"InputList"},
-        "userId":{"shape":"UserID"},
-        "searchQuery":{"shape":"Query"}
+        "campaignArn":{
+          "shape":"Arn",
+          "documentation":"<p>The Amazon Resource Name (ARN) of the campaign to use for generating the personalized ranking.</p>"
+        },
+        "inputList":{
+          "shape":"InputList",
+          "documentation":"<p>A list of items (itemId's) to rank. If an item was not included in the training dataset, the item is appended to the end of the reranked list.</p>"
+        },
+        "userId":{
+          "shape":"UserID",
+          "documentation":"<p>The user for which you want the campaign to provide a personalized ranking.</p>"
+        }
       }
     },
     "GetPersonalizedRankingResponse":{
       "type":"structure",
       "members":{
-        "personalizedRanking":{"shape":"ItemList"}
+        "personalizedRanking":{
+          "shape":"ItemList",
+          "documentation":"<p>A list of items in order of most likely interest to the user.</p>"
+        }
       }
     },
     "GetRecommendationsRequest":{
       "type":"structure",
       "required":["campaignArn"],
       "members":{
-        "campaignArn":{"shape":"Arn"},
-        "itemId":{"shape":"ItemID"},
-        "userId":{"shape":"UserID"},
-        "numResults":{"shape":"NumResults"}
+        "campaignArn":{
+          "shape":"Arn",
+          "documentation":"<p>The Amazon Resource Name (ARN) of the campaign to use for getting recommendations.</p>"
+        },
+        "itemId":{
+          "shape":"ItemID",
+          "documentation":"<p>The item ID to provide recommendations for.</p> <p>Required for <code>RELATED_ITEMS</code> recipe type.</p>"
+        },
+        "userId":{
+          "shape":"UserID",
+          "documentation":"<p>The user ID to provide recommendations for.</p> <p>Required for <code>USER_PERSONALIZATION</code> recipe type.</p>"
+        },
+        "numResults":{
+          "shape":"NumResults",
+          "documentation":"<p>The number of results to return. The default is 25. The maximum is 100.</p>"
+        }
       }
     },
     "GetRecommendationsResponse":{
       "type":"structure",
       "members":{
-        "itemList":{"shape":"ItemList"}
+        "itemList":{
+          "shape":"ItemList",
+          "documentation":"<p>A list of recommendations.</p>"
+        }
       }
     },
     "InputList":{
@@ -94,12 +122,13 @@
       "members":{
         "message":{"shape":"ErrorMessage"}
       },
+      "documentation":"<p>Provide a valid value for the field or parameter.</p>",
       "error":{"httpStatusCode":400},
       "exception":true
     },
     "ItemID":{
       "type":"string",
-      "max":100
+      "max":256
     },
     "ItemList":{
       "type":"list",
@@ -114,25 +143,26 @@
     "PredictedItem":{
       "type":"structure",
       "members":{
-        "itemId":{"shape":"ItemID"}
-      }
-    },
-    "Query":{
-      "type":"string",
-      "max":1024,
-      "pattern":"^[a-zA-Z0-9](-*[a-zA-Z0-9])*"
+        "itemId":{
+          "shape":"ItemID",
+          "documentation":"<p>The recommended item ID.</p>"
+        }
+      },
+      "documentation":"<p>An object that identifies an item.</p> <p>The and APIs return a list of <code>PredictedItem</code>s.</p>"
     },
     "ResourceNotFoundException":{
       "type":"structure",
       "members":{
         "message":{"shape":"ErrorMessage"}
       },
+      "documentation":"<p>The specified resource does not exist.</p>",
       "error":{"httpStatusCode":404},
       "exception":true
     },
     "UserID":{
       "type":"string",
-      "max":100
+      "max":256
     }
-  }
+  },
+  "documentation":"<p/>"
 }

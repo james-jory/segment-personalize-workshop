@@ -1,3 +1,6 @@
+-- Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+-- SPDX-License-Identifier: MIT-0
+
 -- Example query for unloading data from Redshift to a 
 -- CSV file on S3 that is in the format expected by 
 -- Amazon Personalize. Replace the values below with 

@@ -1,10 +1,10 @@
 # Workshop Support Components
 
-## Personalize API for boto3 (Preview) Lambda Layer
+## Personalize API for boto3 Lambda Layer
 
 Before you can call Personalize APIs from Python Lambda functions, the Personalize API model files have to be installed with the AWS SDK for Python. Rather than duplicate the bundling of the model files and initialization code for each function used in this workshop, a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) is used to package the files and initialization code in a reusable format. Once uploaded as a Layer, the initialization helper function can be imported and called with a single line of code.
 
-**Note that the requirement to explicitly install the Personalize API with the Python SDK is temporary. Once Personalize is out of Preview, it will be pre-bundled with the Python SDK.**
+**Note that the requirement to explicitly install the Personalize API with the Python SDK is temporary. Once the Lambda runtime for Python is updated to include the Personalize API, this layer will no longer be necessary.**
 
 ### Installing Personalize API Lambda Layer
 

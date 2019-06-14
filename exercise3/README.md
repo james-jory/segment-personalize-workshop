@@ -34,7 +34,7 @@ Scroll down to the "Function code" panel. The source code for the function has a
 
 ![Lambda Function Code](images/LambdaRecCode.png)
 
-### Wire up Personalize API using Lambda Layer (Preview only)
+### Wire up Personalize API using Lambda Layer
 
 You will notice in the function source the following `import` and function call.
 
@@ -44,7 +44,7 @@ import of import init_personalize_api as api_helper
 api_helper.init()
 ```
 
-This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. ***This is only necessary while Personalize is in Preview. Once Personalize is GA and the API is bundled with the Python SDK, as well as other language SDKs, this supporting Layer will no longer be needed.*** For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
+This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. ***This is only necessary until the Personalize API is available in the Python Lambda runtime. Therefore, once the Personalize API is included in the Python Lambda runtime, you can skip the step of installing this layer.*** For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
 
 To install our Layer, open the Lambda navigation panel and click "Layers".
 
