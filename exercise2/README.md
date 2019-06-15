@@ -102,7 +102,7 @@ To obtain the IAM and S3 information we need for this form, we will open a new t
 
 1. Open up a new browser window or tab in your current console session by right-clicking on the "AWS" logo in the upper-left corner of the page and choosing "Open Link in New Tab" or "Open Link in New Window" (the menu options may be worded differently in the web browser you're using).
 2. In the __new tab/window that was opened__, browse to the IAM service page.
-3. Select "Roles" in the left navigation and find the IAM role with the name "module-personalize-PersonalizeServiceRole-...". This role was pre-created for you for this workshop and allows Personalize to access the S3 bucket where your CSV is located.
+3. Select "Roles" in the left navigation and find the IAM role with the name **"module-personalize-PersonalizeServiceRole-..."**. This role was pre-created for you for this workshop and allows Personalize to access the S3 bucket where your CSV is located.
 4. Click on this role name to display the role's detail page.
 5. The "Role ARN" is displayed at the top of the "Summary" section. Click on the copy icon displayed at the end of Role ARN to copy the ARN to your clipboard.
 6. Switch browser tabs/windows back to the Personalize "Import user-item interaction data" form and paste the ARN into the "Custom IAM role ARN" field.
@@ -136,7 +136,7 @@ On the "Create solution" page, enter a "Solution name". When an interaction data
 
 ![Personalize Solution Configuration](images/PersonalizeSolutionConfig.png)
 
-Scroll down to the "Solution configuration" panel and click "true" to have Personalize perform hyperparameter optimization (HPO).
+Scroll down to the "Solution configuration" panel and click "true" to have Personalize perform hyperparameter optimization (HPO) on our model. We won't make any changes to the default HPO config settings. See the [HRNN Recipe](https://docs.aws.amazon.com/personalize/latest/dg/native-recipe-hrnn.html) documentation for details on the hyperparameters available for this recipe.
 
 ![Personalize Solution Configuration](images/PersonalizeSolutionHPO.png)
 
@@ -164,7 +164,7 @@ Personalize will start creating your new campaign. This process can take several
 
 ![Personalize Campaign Creating](images/PersonalizeCampaignCreating.png)
 
-Once your campaign has finished being created and deployed, you can use the AWS console to test the Personalize "GetRecommendations" endpoint. Enter a `USER_ID` from the CSV we imported earlier or try entering a made up user ID (i.e. simulating a new user not present in the training set).
+Once your campaign has finished being created and deployed, you can use the AWS console to test the Personalize "GetRecommendations" endpoint. Enter a `USER_ID` from the CSV we imported earlier, such as "5493069786", or try entering a made up user ID (i.e. simulating a new user not present in the training set).
 
 ![Personalize Campaign Testing](images/PersonalizeCampaignTest.png)
 
