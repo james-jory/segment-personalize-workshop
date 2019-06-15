@@ -8,11 +8,11 @@ One of Segment's core capabilities is the ability collect semantic events and pr
 
 In this exercise we will walk through the process required to take historical clickstream data collected by Segment to train a model in Amazon Personalize. The advantage of bootstrapping Personalize with historical clickstream data is that you will start with a model that reflects your users's latest purchases and browsing behavior.
 
-Segment provides the ability to send event data from one or more data sources configured in your Segment account to several AWS services including S3, Kinesis, and Redshift. Since the raw format, fields, and event types in the Segment event data cannot be directly uploaded to Amazon Personalize for model training, this exercise will guide you through the process of transforming the data into the format expected by Personalize.
+Segment provides the ability to send event data from one or more data sources configured in your Segment account to several AWS services including Amazon Simple Storage Service (S3), Amazon Kinesis, and Amazon Redshift. Since the raw format, fields, and event types in the Segment event data cannot be directly uploaded to Amazon Personalize for model training, this exercise will guide you through the process of transforming the data into the format expected by Personalize.
 
-In the interest of time for the workshop, we will start with data that has already been written to an Amazon S3 bucket by the Segment S3 destination. The [format](https://segment.com/docs/destinations/amazon-s3/#data-format) of these files is compressed JSON where events are grouped into directories by Segment source ID and time. Since the Personalize service requires training data to be uploaded in CSV format, we will need to aggregate, filter, and transform the raw JSON into a single CSV file using an ETL job. We will use AWS Glue for this step. However, before creating our Glue ETL job, we'll learn how to use Amazon Athena to easily explore our training data. Being able to quickly inspect and investigate training data can be invaluable in gaining insight from and resolving issues.
+In the interest of time for the workshop, we will start with data that has already been written to an Amazon S3 bucket by the Segment S3 destination. The [format](https://segment.com/docs/destinations/amazon-s3/#data-format) of these files is compressed JSON where events are grouped into directories by Segment source ID and time. Since the Personalize service requires training data to be uploaded in CSV format, we will need to aggregate, filter, and transform the raw JSON into a single CSV file using an ETL job. We will use AWS Glue for this step. However, before creating our Glue ETL job, we'll learn how to use Amazon Athena to easily explore our training data. Being able to quickly inspect and investigate training data can be invaluable in gaining insight from and resolving data related issues.
 
-> There is a minimum amount of data that is necessary to train a model. Using existing historical data allows you to immediately start training a solution. If you ingest data as it is created, and there is no historical data, it can take a while before training can begin.
+> There is a minimum amount of data that is necessary to train a model in Personalize. Using existing historical data allows you to immediately start training a solution. If you ingest data as it is created, and there is no historical data, it can take a while before training can begin.
 
 ### What You'll Be Building
 
@@ -25,28 +25,26 @@ In this exercise we will walk through the process required to take the raw histo
 * Kinesis Data Firehose
 * Redshift
 
-For this exercise we will walk you through how to setup an S3 destination in your Segment account. In the interest of time, though, we will provide a pre-made test dataset that you will upload to S3 yourself. Then you will use AWS Glue to create an ETL (extract, transform, load) Job that will filter and transform the raw JSON file into the format required by Personalize. The output file will be written back to S3. Finally, you will learn how to use Amazon Athena to query and visualize the data in the transformed file directly from S3.
+For this exercise we will walk you through how to setup an S3 destination in your Segment account. In the interest of time, though, we will provide access to pre-populated in an existing S3 bucket. Then you will learn how to use Amazon Athena to query and visualize the JSON files directly from S3. Finally, you will use AWS Glue to create an ETL (extract, transform, load) Job that will filter and transform the raw JSON files into the format required by Personalize. The output file will be written back to S3 in your account. 
 
-> The Segment Amazon S3 destination is just one method for collecting historical training data for Personalize. If you're already using [Segment's Amazon Redshift Data Warehouse destination](https://segment.com/docs/destinations/redshift/), you can easily extract (or unload) data from your Redshift instance as a CSV suitable for uploading into Personalize. See the [sql/redshift_unload_as_csv.sql](sql/redshift_unload_as_csv.sql) file.
+> The Segment Amazon S3 destination is just one method for collecting historical training data for Personalize. If you're already using [Segment's Amazon Redshift Data Warehouse destination](https://segment.com/docs/destinations/redshift/), you can easily extract (or unload) data from your Redshift instance to a CSV file in S3 that is suitable for uploading into Personalize. See the [sql/redshift_unload_as_csv.sql](sql/redshift_unload_as_csv.sql) file for a sample SQL statement.
 
-**Exercise Preparation**
+### Exercise Preparation
+
 If you have not already cloned this repository to your local machine, do so now.
-
 
     git clone https://github.com/james-jory/segment-personalize-workshop.git
 
-**Claim your Segment Workspace**
-For the live workshop exercises, Segment has provisioned 80 workspaces for the workshop.  If you are doing this workshop after the live event, you will need a new Business Tier workspace with Personas enabled from Segment, or you will need to use your existing Segment workspace. If you do not have one, please contact your Segment sales representative at https://segment.com/contact/sales/.
+### Claim your Segment Workspace
+
+For the live workshop exercises, Segment has pre-provisioned workspaces for the workshop.  If you are doing this workshop after the live event, you will need a new Business Tier workspace with Personas enabled from Segment, or you will need to use your existing Segment workspace. If you do not have one, please contact your Segment sales representative at https://segment.com/contact/sales/.
 
 To get your workshop workspace:
-
 
 1. Open the Google Sheet at [Segment Workspaces](https://docs.google.com/spreadsheets/d/1SyEDxLmquN96tsv-dhrOhduRLilWjITQyCBXCcA73U4/edit?usp=sharing)
 2. Find an unclaimed workspace
 
-
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558297225659_image.png)
-
 
 
 3. Claim your shiny new Segment workspace by putting your name in the appropriate fields, please.
@@ -140,7 +138,7 @@ For the web source, use the Javascript source type, for Android the Android sour
 
 ## Part 3 - Set up Segment Personas
 
-Personas will use the events that your collect from your user interactions to create individual user profiles.  This will allow you and your marketing teams to group users into audiences.  Later, you will be able to define the destinations to which you will be able to send user definitions and traits by setting up destinations in Personas.  You will also be able to add product recommendations from Personalize to each user profile in Personas.
+Personas will use the events that you collect from your user interactions to create individual user profiles.  This will allow you and your marketing teams to group users into audiences.  Later, you will be able to define the destinations to which you will be able to send user definitions and traits by setting up destinations in Personas.  You will also be able to add product recommendations from Personalize to each user profile in Personas.
 
 After setting up your sources, your workspace should look something like this:
 
@@ -209,8 +207,9 @@ Because events are synchronized from Segment to S3 on a batch basis, we will als
 
 You will need some data to be populated in Segment however, since this will allow you to create recommendations based on (simulated) user activity later on.
 
-This part can be choose your own adventure, though we strongly recommend using the AWS Cloud9 option to avoid Python package hell.  Let’s start with Cloud9.
+This part can be choose your own adventure, though we strongly recommend using the AWS Cloud9 option to avoid Python package hell. Let’s start with Cloud9.
 
+> AWS Cloud9 is a cloud-based integrated development environment (IDE) that lets you write, run, and debug code with just a browser. The purpose of using Cloud9 for this part of the workshop is to simply provide a consistent and predictable environment for running a Python script that will push sample data into your Segment workspace. Cloud9 is not required to use Segment or Personalize.
 
 1. Go to your AWS Console.
 2. Under the Services dropdown, find Cloud9
@@ -330,7 +329,7 @@ The write key for the source is in the next screen:
 25. In your Cloud9 terminal, run the script:
 
 ```
-python segment-event-generator.py 2019-05-19
+python segment-event-generator.py 2019-06-16
 ```
 
 This will generate two days worth of interaction data in your Segment instance.  If you are using this after the date shown above, your should change the date to be at least one day prior to today so that you get a long enough run of historical data.
@@ -345,9 +344,9 @@ In the interest of time, we have pre-populated an S3 bucket with raw historical 
 
 In this step we will demonstrate how Amazon Athena can be used to create external table pointing at the raw JSON files and then query those files using SQL. This can be an invaluable tool to inspect your data before uploading it into Personalize and as you iterate with models over time.
 
-Log in to the AWS console. If you are participating in an AWS led workshop, use the instructions provided to access your temporary workshop account. Browse to the Amazon Athena service page in the console, making sure that you are in the "N. Virginia" region.
+Log in to the AWS console. If you are participating in an AWS led workshop, use the instructions provided to access your temporary workshop account. Browse to the Amazon Athena service page in the console, making sure that you are in the "N. Virginia" region. If this is the first time you've used Athena, you will be presented with a welcome page. Click the "Get started" button to continue. If the tutorial is presented, feel free to walk through the tutorial or click the "X" to exit the tutorial.
 
-Before we can create a table for the data in S3, we need an Athena database. For the purposes of this exercise, the database that we use is not important. If a "default" database has not been setup for you, create one by entering the following DDL statement in the "New query 1" tab and pressing the "Run query" button.
+Before we can create a table for the data in S3, we need an Athena database. For the purposes of this exercise, the database that we use is not important. If a "default" or "sampledb" database already exists in your account, you can use that for the new table. Otherwise you can create a new database using the DDL statement below (paste it into the "New query 1" tab and press "Run query".
 
 ```sql
 CREATE DATABASE IF NOT EXISTS default;
@@ -355,20 +354,48 @@ CREATE DATABASE IF NOT EXISTS default;
 
 ![Create Athena Database](images/AthenaCreateDatabase.png)
 
-Next let's create a table in Athena that points to the historical data in S3. We have written the DDL statement for you. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the "CREATE EXTERNAL TABLE..." statement. One important aspect of this DDL statement is that there are several field name mapping statements in the SERDEPROPERTIES section. These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data.
+Next let's create a table in the Athena database above that points to the historical data in S3. We have written the DDL statement for you that will create this table. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the `CREATE EXTERNAL TABLE...` statement. One important aspect of this DDL statement is that there are several field name mapping statements in the `SERDEPROPERTIES` section (as shown below). These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed database, table, view, and column names is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data in Athena.
+
+```sql
+CREATE EXTERNAL TABLE IF NOT EXISTS segment_logs (
+    ...
+  )           
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
+  "mapping.campaign_name"="Campaign Name",
+  "mapping.campaign_source"="Campaign Source",
+  "mapping.experiment_group"="Experiment Group",
+  "mapping.favorite_departments"="Favorite Departments",
+  "mapping.invited_user"="Invited User?",
+  "mapping.referrering_domain"="Referrering Domain"
+  )
+LOCATION 's3://segment-personalize-workshop/segment-logs/';
+```
 
 When you're ready, press the "Run query" button to execute the statement. This will create the table in the Glue Data Catalog. Now you are ready to execute queries against the compressed JSON files. Trying inspecting the data with a few queries.
 
 ```sql
 -- What does the data look like?
 SELECT * FROM segment_logs limit 20;
+```
+
+![Athena Query Star](images/AthenaQueryStar.png)
+
+```sql
 -- The 'event' column is what we can use for event type in training our model.
 -- What event types are available?
 SELECT COUNT(messageId) AS eventCount, event FROM segment_logs GROUP BY event ORDER BY eventCount DESC;
+```
+
+![Athena Query Events](images/AthenaQueryEvents.png)
+
+```sql
 -- In order to make recommendations we need an item/product to recommend.
 -- Our product SKU is in 'properties.sku'. What event types are available where we have a SKU?
 SELECT COUNT(messageId) AS eventCount, event FROM segment_logs WHERE properties.sku IS NOT NULL GROUP BY event ORDER BY eventCount DESC;
 ```
+
+![Athena Query SKUs](images/AthenaQuerySkus.png)
 
 From the results of the last query you will notice that there are three events that include a product SKU: 'Product Clicked', 'Product Added', and 'Order Completed'. We will use these events in training our model for product recommendations. We could also train models based on other event types, such as 'Page Viewed' or 'Signup Success' and use them to make content or membership program recommendations.
 
@@ -385,17 +412,19 @@ First, ensure that you are logged in to the AWS account provided to you for this
 Click the "Add job" button and enter the following information.
 
 * Enter a job name such as "SegmentEventsJsonToCsv".
-* For IAM role, a role has already been created for you that starts with the name "module-personalize-GlueServiceRole-...". Select this role.
+* For IAM role, a role has already been created for you that starts with the name `module-personalize-GlueServiceRole-...`. Select this role.
 * Leave Type as "Spark".
 * For "This job runs", click the radio button "A new script to be authored by you".
 * Leave everything else the same and click Next at the bottom of the form.
 * On the "Connections" step just click "Save job and edit script" since we are not accessing data in a database for this job.
 
-The source code for the Glue job has already been written for you. Copy the contents of [etl/glue_etl.py](etl/glue_etl.py) to your clipboard and paste it into the Glue editor window. Click "Save" to save the job script.
+![Glue Job Settings](images/GlueAddJobSettings.png)
+
+The source code for the Glue job has already been written for you. Copy the contents of [etl/glue_etl.py](etl/glue_etl.py) to your clipboard and paste it into the Glue editor window. **Then click "Save" to save the job script.**
 
 ![Glue Job Script](images/GlueEditJobScript.png)
 
-Let's review key parts of the script in more detail. First, the script is initialized with a few job parameters. We'll see how to specify these parameter values when we run the job below. For now, just see we're passing in the location where the output CSV should be written through `S3_CSV_OUTPUT_PATH`. The `JOB_NAME` parameter is passed to our job by the Glue execution framework.
+Let's review key parts of the script in more detail. First, the script is initialized with two job parameters. The `JOB_NAME` parameter is passed to our job by the Glue execution framework. Below we'll see how to specify the `S3_CSV_OUTPUT_PATH` parameter value when we run the job. This parameter tells our job where to write the CSV file.
 
 ```python
 args = getResolvedOptions(sys.argv, ['JOB_NAME', 'S3_CSV_OUTPUT_PATH'])
@@ -417,7 +446,7 @@ The first step in our Job is to load the raw JSON file as a Glue DynamicFrame. W
 datasource0 = glueContext.create_dynamic_frame_from_options("s3", {'paths': ["s3://segment-personalize-workshop/segment-logs"], 'recurse':True}, format="json")
 ```
 
-Since we only want specific events for training our Personalize model, we'll use Glue's `Filter` transformation to keep only the records we want. The `datasource0` DynamicFrame created above is passed to `Filter.apply(...)` function along with the `filter_function` function. It's in `filter_function` where we keep events that have a product SKU and `userId` specified. The resulting DynamicFrame is captured as `interactions`.
+Since we only want specific events for training our Personalize model, we'll use Glue's `Filter` transformation to keep only the records we want. The `datasource0` DynamicFrame created above is passed to `Filter.apply(...)` function along with the `filter_function` function. It's in `filter_function` where we keep events that have a userId, product SKU, and event specified. All other records are ignored. The resulting DynamicFrame is captured as `interactions`.
 
 ```python
 supported_events = ['Product Added', 'Order Completed', 'Product Clicked']
@@ -434,7 +463,7 @@ def filter_function(dynamicRecord):
 interactions = Filter.apply(frame = datasource0, f = filter_function, transformation_ctx = "interactions")
 ```
 
-Next we will call Glue's `ApplyMapping` transformation, passing the `interactions` DynamicFrame from above and field mapping specification that indicates the fields we want to retain and their new names. These mapped field names will become the column names in our output CSV. You'll notice that we're using the product SKU as the `ITEM_ID` and `event` as the `EVENT_TYPE`. We're also renaming the `timestamp` field to `TIMESTAMP_ISO` since the format of this field value in the JSON file is an ISO 8601 date and Personalize requires timestamps to be specified in UNIX time (number seconds since Epoc).
+Next we will call Glue's `ApplyMapping` transformation, passing the `interactions` DynamicFrame from above and field mapping specification that indicates the fields we want to retain and their new names. These mapped field names will become the column names in our output CSV. You'll notice that we're using the product SKU as the `ITEM_ID` and `event` as the `EVENT_TYPE` These will have meaning in the Personalize interaction schema that we will use when uploading the CSV into Personalize. We're also renaming the `timestamp` field to `TIMESTAMP_ISO` since the format of this field value in the JSON file is an ISO 8601 date and Personalize requires timestamps to be specified in UNIX time (number seconds since Epoc).
 
 ```python
 applymapping1 = ApplyMapping.apply(frame = interactions, mappings = [ \
@@ -471,27 +500,33 @@ job.commit()
 
 ### Run AWS Glue ETL Job
 
-With our ETL Job script created and saved, it's time to run the job to create the CSV needed to train a Personalize Solution. Before going any further, open another AWS console browser tab/window by right-clicking on the AWS logo in the upper left corner of the page and select "Open Link in New Tab" (or Window).
+With our ETL Job script created and saved, it's time to run the job to create the CSV needed to train a Personalize Solution. Before going any further, we need to open another AWS console browser tab/window so we can get the S3 bucket name to use in our Glue job parameter that was described above. Right-click on the AWS logo in the upper left corner of the page and select "Open Link in New Tab" (or Window). In the new tab/window, browse to the S3 service page. You should see the S3 bucket pre-created for you. It should be named something line `personalize-data-...`.
 
-While still in the Glue service console and the job listed, click the "Run job" button. This will cause the Parameters panel to display. Click the "Security configuration, script libraries, and job parameters" section header to cause the job parameters fields to be displayed.
+![S3 Bucket](images/S3Bucket.png)
+
+We will need this bucket name in a moment. Keep this tab/window open.
+
+Switch back the brower tab/window where your Glue script was created. While in the Glue service console and the job listed, click the "Run job" button. This will cause the Parameters panel to display. Click the "Security configuration, script libraries, and job parameters" section header to cause the job parameters fields to be displayed.
 
 ![Glue Job Parameters](images/GlueRunJobDialog.png)
 
-Scroll down to the "Job parameters" section. This is where we will specify the job parameters that our script expects for the path to the input data and the path to the output file. Create two job parameters with the following key and value. Be sure to prefix each key with `--` as shown. Substitute your account ID for `[ACCOUNT_ID]` in the values below. You copy the bucket name to your clipboard from the S3 service page in the tab/window you opened above.
+Scroll down to the "Job parameters" section. This is where we will specify the job parameter that our script expects for the path to the output file. Create a job parameter with the following key and value. Be sure to prefix the key with `--` as shown. For the parameter value, **substitute "YOUR_BUCKET_NAME" with the name of the S3 bucket in the other browser tab/window we opened above.**
 
 | Key                  | Value                                          |
 | -------------------- | ---------------------------------------------- |
-| --S3_CSV_OUTPUT_PATH | s3://personalize-data-[ACCOUNT_ID]/transformed |
+| --S3_CSV_OUTPUT_PATH | s3://***YOUR-BUCKET_NAME***/transformed |
 
 ![Glue Job Parameters](images/GlueRunJobParams.png)
 
-Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. It may take a few minutes to start the execution of your job and several minutes to complete. Once your job starts executing, you can also view the log output in CloudWatch > Logs > `/aws-glue/jobs/output` while it is running.
+Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. Your job may sit in a "Pending execution" state for a few minutes before it starts. Once your job starts executing, you can also view the log output in CloudWatch > Logs > `/aws-glue/jobs/output` while it is running. Note that the CloudWatch log will be created when your job starts running.
 
 When the job completes click the "X" in the upper right corner of the the page to exit the job script editor.
 
 ### Verify CSV Output File
 
-Browse to the S3 service page in the AWS console and find the bucket with a name starting with `personalize-data-...`. Click on the bucket name. If the job completed successfully you should see a folder named "transformed". Click on "transformed" and you should see the output file created by the ETL job. If the file is missing or is empty then the job likely experienced a problem. You can review the job's log under CloudWatch > Logs > `/aws-glue/jobs/output` to troubleshoot possible errors. Otherwise, you can skip the ETL step and upload a pre-generated CSV located in the [data/transformed](../data/transformed) directory of this repository (i.e. upload the pre-generated file to your `personalize-data-...` S3 bucket in the `transformed` folder using the AWS console).
+Browse to the S3 service page in the AWS console and find the bucket with a name starting with `personalize-data-...`. Click on the bucket name. If the job completed successfully you should see a folder named "transformed". Click on "transformed" and you should see the output file created by the ETL job. If the file is missing or is empty then the job likely experienced a problem. You can review the job's log under CloudWatch > Logs > `/aws-glue/jobs/output` to troubleshoot possible errors. The most common cause for the job failing is not accurately specifying the `S3_CSV_OUTPUT_PATH` job parameter key and/or value.
+
+If you are unable to get the job to complete successfully, you can skip the ETL step and upload a pre-generated CSV located in the [data/transformed](../data/transformed) directory of this repository (i.e. upload the pre-generated file to your `personalize-data-...` S3 bucket in the `transformed` folder using the AWS console). You may need to create the `transformed` folder before uploading the file if it was not created by your job.
 
 ![Glue Job Transformed File](images/GlueJobOutputFile.png)
 

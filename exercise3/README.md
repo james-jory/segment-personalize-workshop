@@ -22,7 +22,7 @@ git clone https://github.com/james-jory/segment-personalize-workshop.git
 
 ![Exercise 3 Architecture](images/Architecture-Exercise3-Part1.png)
 
-First we will create a Lambda function that will be called by an API Gateway endpoint. In the AWS console for the account you've been assigned for the workshop, browse to the Lambda service page. Click the "Create function" button to create a new function.
+First we will create a Lambda function that will be called by an API Gateway endpoint. In the AWS console for the account you've been assigned for the workshop, browse to the Lambda service page. Click the "Create a function" button from the welcome page to create a new function.
 
 ![Lambda Create Function](images/LambdaCreateFunction.png)
 
@@ -30,9 +30,11 @@ Enter a name for your function and specify Python 3.7 as the runtime. Expand the
 
 ![Lambda Function Config](images/LambdaRecEndpointCreate.png)
 
-Scroll down to the "Function code" panel. The source code for the function has already been written and is provided in this repository at [recommendations/lambda_function.py](recommendations/lambda_function.py). Open this file in a new browser tab/window, copy it to your clipboard, and paste it into the source code editor for our Lambda function as shown below. Click the "Save" button at the top of the page when you're done.
+Scroll down to the "Function code" panel. The source code for the function has already been written and is provided in this repository at [recommendations/lambda_function.py](recommendations/lambda_function.py). Open this file in a new browser tab/window, copy it to your clipboard, and paste it into the source code editor for our Lambda function as shown below. **Click the "Save" button at the top of the page when you're done.**
 
 ![Lambda Function Code](images/LambdaRecCode.png)
+
+(Be sure to save your function before proceeding.)
 
 ### Wire up Personalize API using Lambda Layer
 
@@ -46,7 +48,7 @@ api_helper.init()
 
 This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. ***This is only necessary until the Personalize API is available in the Python Lambda runtime. Therefore, once the Personalize API is included in the Python Lambda runtime, you can skip the step of installing this layer.*** For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
 
-To install our Layer, open the Lambda navigation panel and click "Layers".
+To install our Layer, open the Lambda navigation panel and click "Layers". Make sure you save your function before proceeding.
 
 ![Lambda Nav Panel](images/LambdaNav.png)
 
@@ -82,7 +84,7 @@ Scroll down to the "Configure triggers" panel. For the API dropdown, select "Cre
 
 ![Lambda API Gateway Config](images/LambdaRecAPIGW_Config.png)
 
-Click "Add" to add API Gateway as a trigger to our function and then click "Save" at the top of the page to save our changes.
+Click "Add" to add API Gateway as a trigger to our function and then **click "Save" at the top of the page to save our changes**.
 
 Next, we need to add environment variables for Segment and for the function to tell it the Personalize Campaign to call for retrieving recommendations.
 
@@ -90,7 +92,7 @@ To obtain the Personalize Campaign ARN, browse to the Personalize service landin
 
 ![Personalize Campaign ARN](images/PersonalizeCampaignArn.png)
 
-Return to our Lambda function and scroll down to the "Environment variables" panel. Add an environment variable with the key `personalize_campaign_arn` and value of the Campaign ARN in your clipboard. Click the "Save" button at the top of the page to save your changes.
+Return to our Lambda function and scroll down to the "Environment variables" panel. Add an environment variable with the key `personalize_campaign_arn` and value of the Campaign ARN in your clipboard. **Click the "Save" button at the top of the page to save your changes.**
 
 ![Lambda Campaign ARN Environment Variable](images/LambdaRecCampaignArn.png)
 
@@ -98,7 +100,7 @@ Now let's browse to the API Gateway service page in the AWS console to test our 
 
 ![API Gateway APIs](images/APIGW_endpoint.png)
 
-Click on the "Test" link to build a test request.
+Click on the "ANY" resource then on the "TEST" link to build a test request.
 
 ![API Gateway Test](images/APIGW_Test.png)
 
@@ -110,6 +112,6 @@ This will send a request through API Gateway which will call our Lambda function
 
 ![API Gateway Test](images/APIGW_TestGetResults.png)
 
-As you can see, the GetRecommendations endpoint for Personalize returns itemIds for recommended items for the specified user. Typically you would then use these itemIds to retrieve meta infromation such as item names, descriptions, and images from, say, a database or API in your application.
+As you should see in the "Response Body", the GetRecommendations endpoint for Personalize returns an "itemList" of item IDs for recommended items for the specified user. Typically you would then use these item IDs to retrieve meta infromation such as item names, descriptions, and images from, say, a database or product microservice in your application. One approach would be to update the Lambda function you created in this exercise to iterate over the itemIds in the itemList, retrieve product information for each item, build a response including this information, and return it to the caller.
 
 In the final [exercise](../exercise4) we will bring everything together and learn how to integrate recommendations from Personalize with your customer profiles in Segment. This allows you to activate recommendations across other integrations in your Segment account.

@@ -5,28 +5,29 @@
 
 Amazon Personalize requires data, uploaded into Amazon Personalize datasets, to train a model.
 
-You have two means to provide the training data. You can import historical data from an Amazon S3 bucket, and you can record data as it is created. In [exercise 1](../exercise1) we learned how to prepare historical data provided by Segment and in [exercise 4](../exercise4) we will learn how to send real-time events to Personalize using the Segment Personalize destination.
+You have two means to provide the training data. You can import historical data into Personalize from an Amazon S3 bucket and you can record data as it is created. In [exercise 1](../exercise1) we learned how to prepare historical data provided by Segment and in [exercise 4](../exercise4) we will learn how to send real-time events to Personalize using the Segment Personalize destination.
 
-A dataset group contains related datasets, three created by you (users, items, and historical interactions), and one created by Amazon Personalize for live event interactions. A dataset group can contain only one of each kind of dataset.
+A dataset group contains related datasets, three created by you (users, items, and historical interactions), and one created by Amazon Personalize for live event interactions. A dataset group can contain only one of each type of dataset.
 
-You can create dataset groups to serve different purposes. For example, you might have an application that provides recommendations for purchasing shoes and another that gives recommendations for places to visit in Europe. In Amazon Personalize, each application would have its own dataset group.
+You can create multiple dataset groups to serve different purposes. For example, you might have an application that provides recommendations for purchasing shoes and another that gives recommendations for places to visit in Europe. In Amazon Personalize, each application would have its own dataset group.
 
 Historical data must be provided in a CSV file. Each dataset type has a unique schema that specifies the contents of the file.
 
 There is a minimum amount of data that is necessary to train a model. Using existing historical data allows you to immediately start training a solution. If you ingest data as it is created, and there is no historical data, it can take a while before training can begin.
 
-You can use the Amazon Personalize console to import data into a dataset. Alternatively you can use the AWS SDK.
+You can use the Amazon Personalize console to import data into a dataset, build a solution, and create a campaign. Alternatively you can use the AWS SDK to orchestrate the process from your own application code.
 
 ### What You'll Be Building
 
 ![Exercise 2 Architecture](images/Architecture-Exercise2.png)
 
-In the previous [exercise](../exercise1/) we learned how to use AWS Glue to take the raw event data written to S3 by Segment and transform it into the format required by Personalize. In this exercise we will pick up where we left off and learn how to create a dataset group and campaign in Personalize by performing the following steps.
+In the previous [exercise](../exercise1/) we learned how to use AWS Glue to take the raw event data written to S3 by Segment and transform it into the format required by Personalize. In this exercise we will pick up where we left off and learn how to create a dataset group, solution, and campaign in Personalize by performing the following steps.
 
 * Create a dataset group in Personalize
 * Define the schema representing the event data in our CSV
 * Upload our CSV into an interaction dataset in the dataset group
 * Create a Personalize Solution, or machine learning model, using the data in the dataset group and a Personalize recipe
+* Create a Personalize Campaign based on our Solution
 
 ### Exercise Preparation
 
@@ -40,23 +41,21 @@ git clone https://github.com/james-jory/segment-personalize-workshop.git
 
 Browse to the Amazon Personalize service landing page in the AWS console, making sure that you are still in the "N. Virginia" region.
 
-Click the "View dataset groups" button to get started.
+Click the "Get started" button to get started.
 
 ![Personalize Start Page](images/PersonalizeStart.png)
 
-On the Dataset Groups page, click the "Create dataset group" button.
+Enter a name for your dataset group and click "Next".
 
-![Personalize Dataset Groups](images/PersonalizeDatasetGroups.png)
+![Personalize Create Dataset Group](images/PersonalizeCreateDatasetGroup.png)
 
-On the "Create dataset group" page, give your dataset group a name. Select the "Upload user-item interaction data" radio button since we will be uploading the CSV we prepared in the [previous exercise](../exercise1). Click "Next" to contiue.
+Enter a name for your interaction dataset. This will be the dataset where we will upload the CSV file.
 
-![Personalize Create Dataset Group](images/PersonalizeCreateGroup.png)
+![Personalize Create Dataset](images/PersonalizeCreateDataset.png)
 
-On the "Create user-item interaction data" page, select the "Create new schema" radio button and give your schema a name.
+Scroll down to the "Schema details" and ensure that "Create new schema" is selected. Enter a name for your schema. Next we need to specify the schema for the interaction dataset. This schema will map to the columns in the CSV we created in the [previous exercise](../exercise1).
 
-![Personalize Interaction Dataset Schema](images/PersonalizeSchema.png)
-
-Scroll down to the "Schema definition" editor. Dataset schemas in Personalize are represented in [Avro](https://avro.apache.org/docs/current/spec.html).
+Dataset schemas in Personalize are represented in [Avro](https://avro.apache.org/docs/current/spec.html).
 
 > Avro is a remote procedure call and data serialization framework developed within Apache's Hadoop project. It uses JSON for defining data types and protocols, and serializes data in a compact binary format.
 
@@ -93,19 +92,19 @@ Let's review the schema in more detail. The required fields for the user-item in
 
 Copy the contents of Avro schema to your clipboard and paste it into the "Schema definition" editor (replacing the proposed schema). Click "Next" to save the schema and move to the next step.
 
-![Personalize Event Avro Schema](images/PersonalizeEventAvroSchema.png)
+![Personalize Interaction Dataset Schema](images/PersonalizeSchema.png)
 
 The "Import user-item interaction data" step is displayed next. To complete this form we will need to get two pieces of information from IAM and S3. Give your import job a name. For the "IAM service role", select "Enter a customer IAM role ARN" from the dropdown. For instructions on completing the remaining fields, see the instructions below.
 
 ![Personalize Interaction Dataset Import Job](images/PersonalizeImportJob.png)
 
-To obtain the IAM and S3 information we need to complete this form, we need to keep the current page open while opening a new tab or window to find the needed information. We'll start with the IAM role.
+To obtain the IAM and S3 information we need for this form, we will open a new tab or window to find the needed information. We'll start with the IAM role.
 
 1. Open up a new browser window or tab in your current console session by right-clicking on the "AWS" logo in the upper-left corner of the page and choosing "Open Link in New Tab" or "Open Link in New Window" (the menu options may be worded differently in the web browser you're using).
 2. In the __new tab/window that was opened__, browse to the IAM service page.
-3. Select "Roles" in the left navigation and find the IAM role with the name "module-personalize-PersonalizeServiceRole-...".
+3. Select "Roles" in the left navigation and find the IAM role with the name **"module-personalize-PersonalizeServiceRole-..."**. This role was pre-created for you for this workshop and allows Personalize to access the S3 bucket where your CSV is located.
 4. Click on this role name to display the role's detail page.
-5. The "Role ARN" is displayed at the top of the "Summary" section. Click on the copy icon displayed at the end of Role ARN to copy the ARN to your clipboard. 
+5. The "Role ARN" is displayed at the top of the "Summary" section. Click on the copy icon displayed at the end of Role ARN to copy the ARN to your clipboard.
 6. Switch browser tabs/windows back to the Personalize "Import user-item interaction data" form and paste the ARN into the "Custom IAM role ARN" field.
 
 ![Personalize Role ARN](images/PersonalizeRoleARN.png)
@@ -127,9 +126,9 @@ After clicking the "Finish" (or "Start import") button at the bottom of the page
 
 ## Part 2 - Create Personalize Solution
 
-Once our event CSV is finished importing into a user-item interaction dataset, we can create a Personalize Solution. This is where the ML model is created. From the Dashboard page for the dataset group we created above, click the "Start" button in the "Create solutions" column.
+Once our interaction CSV is finished importing into a user-item interaction dataset, we can create a Personalize Solution. This is where the ML model is created. From the Dashboard page for the dataset group we created above, click the "Start" button in the "Create solutions" column.
 
-> We are skipping the event ingestion step for now and will come back to it in [exercise 4](../exercise4).
+> Note: We are skipping the event ingestion step for now and will come back to it in [exercise 4](../exercise4).
 
 ![Create Personalize Solution](images/PersonalizeCreateSolution.png)
 
@@ -137,7 +136,15 @@ On the "Create solution" page, enter a "Solution name". When an interaction data
 
 ![Personalize Solution Configuration](images/PersonalizeSolutionConfig.png)
 
-Click the "Finish" button to create your Solution. This process can take several minutes to complete.
+Scroll down to the "Solution configuration" panel and click "true" to have Personalize perform hyperparameter optimization (HPO) on our model. We won't make any changes to the default HPO config settings. See the [HRNN Recipe](https://docs.aws.amazon.com/personalize/latest/dg/native-recipe-hrnn.html) documentation for details on the hyperparameters available for this recipe.
+
+![Personalize Solution Configuration](images/PersonalizeSolutionHPO.png)
+
+Scroll to the bottom of the page and click the "Finish" button to move to the next step. Finally, on the "Create solution version" page, click "Finish" to create your Solution.
+
+![Personalize Solution Version](images/PersonalizeCreateSolutionVersion.png)
+
+The process of creating your Solution can take 30-40 minutes for our test dataset.
 
 ![Personalize Solution Creation in Progress](images/PersonalizeSolutionInProgress.png)
 
@@ -157,7 +164,7 @@ Personalize will start creating your new campaign. This process can take several
 
 ![Personalize Campaign Creating](images/PersonalizeCampaignCreating.png)
 
-Once your campaign has finished being created and deployed, you can use the AWS console to test the Personalize "GetRecommendations" endpoint. Enter a `USER_ID` from the CSV we imported earlier or try entering a made up user ID (i.e. simulating a new user not present in the training set).
+Once your campaign has finished being created and deployed, you can use the AWS console to test the Personalize "GetRecommendations" endpoint. Enter a `USER_ID` from the CSV we imported earlier, such as "5493069786", or try entering a made up user ID (i.e. simulating a new user not present in the training set).
 
 ![Personalize Campaign Testing](images/PersonalizeCampaignTest.png)
 
