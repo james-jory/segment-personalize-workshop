@@ -344,9 +344,9 @@ In the interest of time, we have pre-populated an S3 bucket with raw historical 
 
 In this step we will demonstrate how Amazon Athena can be used to create external table pointing at the raw JSON files and then query those files using SQL. This can be an invaluable tool to inspect your data before uploading it into Personalize and as you iterate with models over time.
 
-Log in to the AWS console. If you are participating in an AWS led workshop, use the instructions provided to access your temporary workshop account. Browse to the Amazon Athena service page in the console, making sure that you are in the "N. Virginia" region.
+Log in to the AWS console. If you are participating in an AWS led workshop, use the instructions provided to access your temporary workshop account. Browse to the Amazon Athena service page in the console, making sure that you are in the "N. Virginia" region. If this is the first time you've used Athena, you will be presented with a welcome page. Click the "Get started" button to continue. If the tutorial is presented, feel free to walk through the tutorial or click the "X" to exit the tutorial.
 
-Before we can create a table for the data in S3, we need an Athena database. For the purposes of this exercise, the database that we use is not important. If a "default" database has not been setup for you, create one by entering the following DDL statement in the "New query 1" tab and pressing the "Run query" button.
+Before we can create a table for the data in S3, we need an Athena database. For the purposes of this exercise, the database that we use is not important. If a "default" or "sampledb" database already exists in your account, you can use that for the new table. Otherwise you can create a new database using the DDL statement below (paste it into the "New query 1" tab and press "Run query".
 
 ```sql
 CREATE DATABASE IF NOT EXISTS default;
@@ -354,7 +354,23 @@ CREATE DATABASE IF NOT EXISTS default;
 
 ![Create Athena Database](images/AthenaCreateDatabase.png)
 
-Next let's create a table in the Athena database above that points to the historical data in S3. We have written the DDL statement for you that will create this table. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the `CREATE EXTERNAL TABLE...` statement. One important aspect of this DDL statement is that there are several field name mapping statements in the `SERDEPROPERTIES` section. These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed database, table, view, and column names is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data in Athena.
+Next let's create a table in the Athena database above that points to the historical data in S3. We have written the DDL statement for you that will create this table. Open the [sql/athena_create_table.sql](sql/athena_create_table.sql) file, copy the contents to your clipboard, and paste file contents into the "New query 1" tab in the Athena console. Take a moment to inspect the `CREATE EXTERNAL TABLE...` statement. One important aspect of this DDL statement is that there are several field name mapping statements in the `SERDEPROPERTIES` section (as shown below). These mappings address the [Athena requirement](https://docs.aws.amazon.com/athena/latest/ug/tables-databases-columns-names.html) that the only special character allowed database, table, view, and column names is an underscore. Since the Segment test data has several trait names with embedded spaces, these mappings allow us to safely query this data in Athena.
+
+```sql
+CREATE EXTERNAL TABLE IF NOT EXISTS segment_logs (
+    ...
+  )           
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
+  "mapping.campaign_name"="Campaign Name",
+  "mapping.campaign_source"="Campaign Source",
+  "mapping.experiment_group"="Experiment Group",
+  "mapping.favorite_departments"="Favorite Departments",
+  "mapping.invited_user"="Invited User?",
+  "mapping.referrering_domain"="Referrering Domain"
+  )
+LOCATION 's3://segment-personalize-workshop/segment-logs/';
+```
 
 When you're ready, press the "Run query" button to execute the statement. This will create the table in the Glue Data Catalog. Now you are ready to execute queries against the compressed JSON files. Trying inspecting the data with a few queries.
 
@@ -363,17 +379,23 @@ When you're ready, press the "Run query" button to execute the statement. This w
 SELECT * FROM segment_logs limit 20;
 ```
 
+![Athena Query Star](images/AthenaQueryStar.png)
+
 ```sql
 -- The 'event' column is what we can use for event type in training our model.
 -- What event types are available?
 SELECT COUNT(messageId) AS eventCount, event FROM segment_logs GROUP BY event ORDER BY eventCount DESC;
 ```
 
+![Athena Query Events](images/AthenaQueryEvents.png)
+
 ```sql
 -- In order to make recommendations we need an item/product to recommend.
 -- Our product SKU is in 'properties.sku'. What event types are available where we have a SKU?
 SELECT COUNT(messageId) AS eventCount, event FROM segment_logs WHERE properties.sku IS NOT NULL GROUP BY event ORDER BY eventCount DESC;
 ```
+
+![Athena Query SKUs](images/AthenaQuerySkus.png)
 
 From the results of the last query you will notice that there are three events that include a product SKU: 'Product Clicked', 'Product Added', and 'Order Completed'. We will use these events in training our model for product recommendations. We could also train models based on other event types, such as 'Page Viewed' or 'Signup Success' and use them to make content or membership program recommendations.
 
@@ -398,7 +420,7 @@ Click the "Add job" button and enter the following information.
 
 ![Glue Job Settings](images/GlueAddJobSettings.png)
 
-The source code for the Glue job has already been written for you. Copy the contents of [etl/glue_etl.py](etl/glue_etl.py) to your clipboard and paste it into the Glue editor window. Then click "Save" to save the job script.
+The source code for the Glue job has already been written for you. Copy the contents of [etl/glue_etl.py](etl/glue_etl.py) to your clipboard and paste it into the Glue editor window. **Then click "Save" to save the job script.**
 
 ![Glue Job Script](images/GlueEditJobScript.png)
 
@@ -496,7 +518,7 @@ Scroll down to the "Job parameters" section. This is where we will specify the j
 
 ![Glue Job Parameters](images/GlueRunJobParams.png)
 
-Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. It may take a few minutes to start the execution of your job and several minutes to complete. Once your job starts executing, you can also view the log output in CloudWatch > Logs > `/aws-glue/jobs/output` while it is running. Note that the CloudWatch log will be created when your job starts running.
+Click the "Run job" button to start the job. Once the job has started running you will see log output in the "Logs" tab at the bottom of the page. Your job may sit in a "Pending execution" state for a few minutes before it starts. Once your job starts executing, you can also view the log output in CloudWatch > Logs > `/aws-glue/jobs/output` while it is running. Note that the CloudWatch log will be created when your job starts running.
 
 When the job completes click the "X" in the upper right corner of the the page to exit the job script editor.
 
@@ -504,7 +526,7 @@ When the job completes click the "X" in the upper right corner of the the page t
 
 Browse to the S3 service page in the AWS console and find the bucket with a name starting with `personalize-data-...`. Click on the bucket name. If the job completed successfully you should see a folder named "transformed". Click on "transformed" and you should see the output file created by the ETL job. If the file is missing or is empty then the job likely experienced a problem. You can review the job's log under CloudWatch > Logs > `/aws-glue/jobs/output` to troubleshoot possible errors. The most common cause for the job failing is not accurately specifying the `S3_CSV_OUTPUT_PATH` job parameter key and/or value.
 
-If you are unable to get the job to complete successfully, you can skip the ETL step and upload a pre-generated CSV located in the [data/transformed](../data/transformed) directory of this repository (i.e. upload the pre-generated file to your `personalize-data-...` S3 bucket in the `transformed` folder using the AWS console). You may need to create the `transformed` folder before uploading the file.
+If you are unable to get the job to complete successfully, you can skip the ETL step and upload a pre-generated CSV located in the [data/transformed](../data/transformed) directory of this repository (i.e. upload the pre-generated file to your `personalize-data-...` S3 bucket in the `transformed` folder using the AWS console). You may need to create the `transformed` folder before uploading the file if it was not created by your job.
 
 ![Glue Job Transformed File](images/GlueJobOutputFile.png)
 

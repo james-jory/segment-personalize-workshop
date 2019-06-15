@@ -136,7 +136,18 @@ On the "Create solution" page, enter a "Solution name". When an interaction data
 
 ![Personalize Solution Configuration](images/PersonalizeSolutionConfig.png)
 
-Click the "Finish" button to create your Solution. This process can take several minutes to complete.
+Scroll down to the "Solution configuration" panel and click "true" to have Personalize perform hyperparameter optimization (HPO).
+
+![Personalize Solution Configuration](images/PersonalizeSolutionHPO.png)
+
+Scroll to the bottom of the page and click the "Finish" button to move to the next step. Finally, on the "Create solution version" page, click "Finish" to create your Solution.
+
+![Personalize Solution Version](images/PersonalizeSolutionVersion.png)
+
+The process of creating your Solution can take 30-40 minutes for our test dataset.
+
+![Personalize Solution Creation in Progress](images/PersonalizeSolutionInProgress.png)
+
 
 ![Personalize Solution Creation in Progress](images/PersonalizeSolutionInProgress.png)
 
