@@ -110,6 +110,6 @@ This will send a request through API Gateway which will call our Lambda function
 
 ![API Gateway Test](images/APIGW_TestGetResults.png)
 
-As you can see, the GetRecommendations endpoint for Personalize returns itemIds for recommended items for the specified user. Typically you would then use these itemIds to retrieve meta infromation such as item names, descriptions, and images from, say, a database or API in your application.
+As you should see in the "Response Body", the GetRecommendations endpoint for Personalize returns an "itemList" of item IDs for recommended items for the specified user. Typically you would then use these item IDs to retrieve meta infromation such as item names, descriptions, and images from, say, a database or product microservice in your application. One approach would be to update the Lambda function you created in this exercise to iterate over the itemIds in the itemList, retrieve product information for each item, build a response including this information, and return it to the caller.
 
 In the final [exercise](../exercise4) we will bring everything together and learn how to integrate recommendations from Personalize with your customer profiles in Segment. This allows you to activate recommendations across other integrations in your Segment account.
