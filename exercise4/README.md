@@ -37,7 +37,7 @@ First you will create a Lambda function that gets called by the Segment Personal
 3. Click ‘Create Function’ (see image below).
 
 
-![Lambda Create Function](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaCreateFunction.png)
+![Lambda Create Function](images/LambdaCreateFunction.png)
 
 4. Select “Author from scratch” at the top of the screen.
 5. Enter the name for your function: `SegmentPersonalizeDestinationHandler`. ***You must use this name for your function since the pre-made IAM policy for calling your function from Segment expects this name.***
@@ -140,24 +140,18 @@ The `trackingId` function argument in your Lambda code identifies the Personaliz
 34. Enter a name for your Event Tracker.
 35. Click the Next button.
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281742532_image.png)
-
+![Personalize Config Event Tracker](images/PersonalizeConfigTracker.png)
 
 The Event Tracker's tracking ID is displayed on the following page and is also available on the Event Tracker's detail page.
 
-
 36. Copy this value to your clipboard and **be sure to press the "Finish" button**.
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281842051_image.png)
-
-
+![Personalize Tracker ID](images/PersonalizeTrackerId.png)
 
 37. Return to your Lambda function.
 38. Create a new key called `personalize_tracking_id`.
 39. Paste the Event Tracker’s tracking ID into the value field.
-40. Click the Save button at the top of the page to save your changes.
+40. **Click the Save button at the top of the page to save your changes.**
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281914584_image.png)
@@ -178,7 +172,7 @@ Your Lambda will also need a key for the Segment source that will ingest events 
 44. Back again to your Lambda tab or window.
 45. Create a new key called `connections_source_write_key`.
 46. Paste the source key you just copied into the value field.
-47. Scroll to the top of the page and click the Save button to save your changes.
+47. **Scroll to the top of the page and click the Save button to save your changes.**
 
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282013045_image.png)
