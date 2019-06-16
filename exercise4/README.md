@@ -53,15 +53,13 @@ First you will create a Lambda function that gets called by the Segment Personal
 12. Change the Handler text box to read `app.lambda_handler` instead of `lambda_function.lambda_handler` (if you don’t do this an error message will appear after the next step).
 13. Select ‘Upload a .zip file’.
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238242052_image.png)
-
+![Lambda Upload Function Zip](images/LambdaUploadFunctionZip.png)
 
 The source code for the function is provided in the workshop code home directory in `/exercise4/app.py`.  For this function, you will use a Lambda .zip file bundle that you will need to make the code work.  This is located in the workshop home directory in `/exercise4/function.zip`.
 
 14. Click the Upload button.
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238459149_image.png)
+![Lambda Upload Function Zip](images/LambdaUploadFunctionZip2.png)
 
 15. Navigate to the directory where you cloned the git repo and go to `segment-personalize-workshop/exercise4/function.zip`
 
@@ -74,7 +72,7 @@ When completed, the function code should look something like this:
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238740999_image.png)
 
-18. Next we need to register a Lambda Layer to wire up the Personalize API with the Python SDK.  This is only required while Personalize is in Beta.  You created the layer in the previous exercise.
+18. Next we need to register a Lambda Layer to wire up the Personalize API with the Python SDK.  This is only required until the Python Lambda runtime is update to include the  Personalize API.  You created the layer in the previous exercise.
 19. Click on "Layers" below the function name in the Lambda Designer panel.
 20. Then click the "Add a layer" button.
 
@@ -111,7 +109,7 @@ Next, we need to add environment variables so the function can pass recommendati
 
 Another critical dependency in your function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint so that new event data can be added to the training set for your Personalize solution.  This will enable the following Python code to work properly when sending events to Personalize:
 
-```
+```python
 response = personalize_events.put_events(
       trackingId = os.environ['personalize_tracking_id'],
       userId = userId,
@@ -161,7 +159,7 @@ Your Lambda will also need a key for the Segment source that will ingest events 
 
 
 41. Go back to your Segment workspace tab or window.
-42. Click on the `personas-event-source` source. This source will accepts events from your lambda.
+42. Click on the `personas-event-source` source. This source will accept events from your Lambda function.
 43. Copy the write key from the Overview tab to your clipboard.
 
 
@@ -178,7 +176,7 @@ Your Lambda will also need a key for the Segment source that will ingest events 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282013045_image.png)
 
 
-Finally, you will need to add two more environment variables to your Lambda.  These are only required while Personalize is in Beta, and allow your Lambda to specify which region-specific API endpoints for Personalize your Lambda will use.
+Finally, you will need to add two more environment variables to your Lambda.  These are only required while Personalize is in Preview, and allow your Lambda to specify which region-specific API endpoints for Personalize your Lambda will use.
 
 
 48. Add an environment variable called `endpoint_url`.
@@ -232,9 +230,9 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 
 
 7. Open the AWS management console in another tab or window.
-8. Go to Services > Lambdas > Functions.
+8. Go to Services > Lambda > Functions.
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232440191_image.png)
+![Lambda Select Function](images/LambdaSelectFunction.png)
 
 9. Click on the link for the Lambda you built earlier.
 10. At the top of the screen, you will see the ARN for your Lambda.
@@ -242,9 +240,7 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 12. Keep this window or tab open, you will need it in a moment.
 
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232645546_image.png)
-
-
+![Lambda Function ARN](images/LambdaFunctionArn.png)
 
 13. Go back to your Segment workspace window.
 14. Click on Connection Settings > Lambda.
@@ -254,26 +250,20 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232866185_image.png)
 
-
-Segment will need execute permission to call your lambda from our service.  An execution role has been set up for you for the workshop.  
-
+Segment will need execute permission to call your Lambda function from Segment's AWS account. An execution role has already been set up for you for the workshop.
 
 17. Open the AWS management console in another tab or window.
 18. Go to Services > IAM.
 19. Click Roles.
-20. In the Search box, type SegmentExecutePersonalizeLambdaRole.
+20. In the Search box, type "SegmentExecutePersonalizeLambda".
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233158727_image.png)
+![IAM Find Lambda Execute Role](images/IAM_FindExecuteRole.png)
 
 21. Click on the role that appears.
 22. At the top of the screen will be the role ARN for the role.
 23. Copy the ARN to the clipboard.
 
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558233272377_image.png)
-
-
+![IAM Find Lambda Execute Role](images/IAM_ExecuteRoleARN.png)
 
 24. Go back to your Segment workspace window.
 25. Click Connection Settings > Role Address.
