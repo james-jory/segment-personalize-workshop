@@ -127,6 +127,13 @@ You will need to repeat these steps to configure three more sources.  One for An
 
 Name your sources as follows:
 
+| Source Name | Source Type |
+| ----------- | ----------- |
+| website-prod | Javascript |
+| android-prod | Android |
+| ios-prod | iOS |
+| personas-event-source | Python |
+
 ```
 website-prod
 android-prod
