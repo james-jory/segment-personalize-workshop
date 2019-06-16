@@ -327,7 +327,7 @@ Your destination is now ready to process events.  In the next section, you will 
 39. Paste the following JSON into the Event Tester.
 40. Make sure the JSON tab is selected at the top, you do not need to select an event type.
 
-```
+```javascript
 {
       "messageId": "test-message-33dlvn",
       "timestamp": "2019-02-25T15:55:05.905Z",
@@ -347,11 +347,13 @@ If all goes well, you will see a screen that look like this:
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558285258920_image.png)
 
-
-In some cases, you may get timeout errors from this screen.  This is generally caused by the Lambda being deployed slowly.  Re-try sending the event.
+In some cases, you may get timeout errors from this screen. This is generally caused by the Lambda being deployed slowly (i.e. cold start).  Re-try sending the event.
 
 This is also where you may see a permissions error - this most likely means that you entered an incorrect external id, an incorrect IAM role ID, or your Lambda function is not named `SegmentPersonalizeDestinationHandler`.  Check those, and try sending a test event again.
 
+Also note that a "200 Success" does not necessarily mean that the event was processed successfully. This is because the Lambda function catches exceptions and logs them to CloudWatch but returns success to Segment. The reason for this is to prevent Segment from continuing to retry sending events that will likely never succeed due to a configuration issue with the function. In production code, you will want to implement more granular error handling.
+
+To make sure that your events are truly being processed successfully, review the CloudWatch logs for your function in your AWS account.
 
 41. In your Segment workspace, click on Sources > personas-event-source.
 42. Select the Debugger tab.
