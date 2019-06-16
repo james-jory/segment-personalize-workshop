@@ -109,7 +109,7 @@ Next, we need to add environment variables so the function can pass recommendati
 
 Another critical dependency in your function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint so that new event data can be added to the training set for your Personalize solution.  This will enable the following Python code to work properly when sending events to Personalize:
 
-```
+```python
 response = personalize_events.put_events(
       trackingId = os.environ['personalize_tracking_id'],
       userId = userId,
@@ -250,9 +250,7 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232866185_image.png)
 
-
-Segment will need execute permission to call your lambda from our service.  An execution role has been set up for you for the workshop.  
-
+Segment will need execute permission to call your Lambda function from Segment's AWS account. An execution role has already been set up for you for the workshop.
 
 17. Open the AWS management console in another tab or window.
 18. Go to Services > IAM.
