@@ -239,45 +239,45 @@ Cloud9 terminals run in VPCs like all EC2 instances.
 
 
 
-8. Select the default, VPC with a single public subnet.
-9. Click the Select button.
+9. Select the default, VPC with a single public subnet.
+10. Click the Select button.
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299502361_image.png)
 
 
 
-10. Name your subnet.
-11. Click the Create VPC button.
+11. Name your subnet.
+12. Click the Create VPC button.
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299573199_image.png)
 
-12. Go back to the Cloud9 configuration wizard in the previous screen or tab.
-13. Your VPC and subnet should already be automatically selected.  If they are not, click the refresh button next to the VPC dropdown.
-14. Select your VPC.
-15. Click the Next Step button.
+13. Go back to the Cloud9 configuration wizard in the previous screen or tab.
+14. Your VPC and subnet should already be automatically selected.  If they are not, click the refresh button next to the VPC dropdown.
+15. Select your VPC.
+16. Click the Next Step button.
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299736195_image.png)
 
 
 
-16. Click the “Create Environment” button.
+17. Click the “Create Environment” button.
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299781230_image.png)
 
 
 
-17. You will be forwarded to a screen that shows your remote IDE which provides a terminal in which you can execute terminal commands.  If you are running an ad blocker in your browser, you will need to disable it for this URL because some ad blockers prevent the Cloud9 service from running in the browser.
+18. You will be forwarded to a screen that shows your remote IDE which provides a terminal in which you can execute terminal commands.  If you are running an ad blocker in your browser, you will need to disable it for this URL because some ad blockers prevent the Cloud9 service from running in the browser.
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299984070_image.png)
 
 
 
-18. Welcome, l33t h4x0r!
+19. Welcome, l33t h4x0r!
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558300244295_image.png)
@@ -286,7 +286,7 @@ Cloud9 terminals run in VPCs like all EC2 instances.
 Keep this window or tab open, or at least save the URL to your instance.  You will need to use this one more time later in the workshop to send events into Segment.  Or like hack a mainframe or something.
 
 
-19. You will need to run the following commands in the terminal window (you are in Ubuntu, right?)
+20. You will need to run the following commands in the terminal window (you are in Ubuntu, right?)
 
 ```
 git clone https://github.com/james-jory/segment-personalize-workshop.git
@@ -294,7 +294,7 @@ pip install python-dateutil --upgrade
 pip install analytics-python
 ```
 
-20. Open the segment-event-generator.py file in the ./data folder of the workshop project.
+21. Open the segment-event-generator.py file in the ./data folder of the workshop project.
 
 ```
 cd segment-personalize-workshop/data
@@ -305,8 +305,8 @@ vi segment-event-generator.py
 
 
 
-21. Go to your Segment workspace window.
-22. You will need the write keys for the web, android, and ios sources you created earlier. You can get these by clicking on each source as shown below.
+22. Go to your Segment workspace window.
+23. You will need the write keys for the web, android, and ios sources you created earlier. You can get these by clicking on each source as shown below.
 
 
 ![](https://camo.githubusercontent.com/804a4e22b35ff233bfe829df4609cf81c7c3562c/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f353339413932374635444137383842353537434530354546353145383232314631443744303244303136423643413239384644354635353330344238434132385f313535313134323631363733355f696d6167652e706e67)
@@ -316,17 +316,17 @@ The write key for the source is in the next screen:
 
 ![](https://camo.githubusercontent.com/30d8382284c7b9902629a461f029e7e868b0bd95/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f353339413932374635444137383842353537434530354546353145383232314631443744303244303136423643413239384644354635353330344238434132385f313535313134323731363836305f696d6167652e706e67)
 
-23. Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
+24. Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558301096176_image.png)
 
 
 
-24. Save your changes (escape key > colon key > `wq` in the vi terminal).   Now you can push events into your Segment sources.
+25. Save your changes (escape key > colon key > `wq` in the vi terminal).   Now you can push events into your Segment sources.
 
 
-25. In your Cloud9 terminal, run the script:
+26. In your Cloud9 terminal, run the script:
 
 ```
 python segment-event-generator.py 2019-06-16
@@ -335,7 +335,7 @@ python segment-event-generator.py 2019-06-16
 This will generate two days worth of interaction data in your Segment instance.  If you are using this after the date shown above, your should change the date to be at least one day prior to today so that you get a long enough run of historical data.
 
 
-26. Validate you can see your events by clicking on each of your sources and looking at the Debugger tab.  You should see events in all of the sources you configured above.  Keep your Cloud9 terminal open for later.
+27. Validate you can see your events by clicking on each of your sources and looking at the Debugger tab.  You should see events in all of the sources you configured above.  Keep your Cloud9 terminal open for later.
 
 
 ## Part 6 - Explore Workshop Test Data
