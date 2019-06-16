@@ -127,19 +127,12 @@ You will need to repeat these steps to configure three more sources.  One for An
 
 Name your sources as follows:
 
-| Source Name | Source Type |
-| ----------- | ----------- |
-| website-prod | Javascript |
-| android-prod | Android |
-| ios-prod | iOS |
-| personas-event-source | Python |
-
-```
-website-prod
-android-prod
-ios-prod
-personas-events-source
-```
+| Source Name | Source Type | Description |
+| ----------- | ----------- | ----------- |
+| website-prod | Javascript | Accepts user events from a web site; created in the example above. |
+| android-prod | Android | Accepts user events from an Android application. |
+| ios-prod | iOS | Accepts user events from an iOS application. |
+| personas-event-source | Python | Accepts events from the Personalize service Lambda you will connect in the last exercise. |
 
 For the web source, use the Javascript source type, for Android the Android source, for iOS the iOS source, and for the personas-events-source use the Python source type.
 
