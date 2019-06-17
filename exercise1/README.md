@@ -316,7 +316,7 @@ The write key for the source is in the next screen:
 
 ![](https://camo.githubusercontent.com/30d8382284c7b9902629a461f029e7e868b0bd95/68747470733a2f2f64326d787565667165616137736a2e636c6f756466726f6e742e6e65742f735f353339413932374635444137383842353537434530354546353145383232314631443744303244303136423643413239384644354635353330344238434132385f313535313134323731363836305f696d6167652e706e67)
 
-24. Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key):
+24. Add each write key to the appropriate variable entry in the script (you will not need a key for the email_write_key entry in the script, leave that blank):
 
 
 ![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558301096176_image.png)
