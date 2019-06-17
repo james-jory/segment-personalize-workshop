@@ -44,7 +44,7 @@ To get your workshop workspace:
 1. Open the Google Sheet at [Segment Workspaces](https://docs.google.com/spreadsheets/d/1SyEDxLmquN96tsv-dhrOhduRLilWjITQyCBXCcA73U4/edit?usp=sharing)
 2. Find an unclaimed workspace
 
-![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558297225659_image.png)
+![](https://paper-attachments.dropbox.com/s_E5B8F73CCFD247F55CDECE88873E27F307EC497126FFEDFF0F4E68F01755C7F7_1560739886350_image.png)
 
 
 3. Claim your shiny new Segment workspace by putting your name in the appropriate fields, please.
@@ -235,7 +235,7 @@ Cloud9 terminals run in VPCs like all EC2 instances.
 8. Click the “Create new VPC” button.  This will open a new tab or browser window, depending on your browser.
 
 
-![](https://paper-attachments.dropbox.com/s_539A927F5DA788B557CE05EF51E8221F1D7D02D016B6CA298FD5F55304B8CA28_1558299428166_image.png)
+![](https://paper-attachments.dropbox.com/s_E5B8F73CCFD247F55CDECE88873E27F307EC497126FFEDFF0F4E68F01755C7F7_1560740342985_image.png)
 
 
 

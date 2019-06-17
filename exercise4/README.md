@@ -248,7 +248,7 @@ To configure the destination, you will need to tell Segment the ARN of the Lambd
 16. Click the Save button.
 
 
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558232866185_image.png)
+![](https://paper-attachments.dropbox.com/s_E5B8F73CCFD247F55CDECE88873E27F307EC497126FFEDFF0F4E68F01755C7F7_1560739912402_image.png)
 
 Segment will need execute permission to call your Lambda function from Segment's AWS account. An execution role has already been set up for you for the workshop.
 
