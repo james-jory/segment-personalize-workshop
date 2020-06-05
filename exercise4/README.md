@@ -72,40 +72,22 @@ When completed, the function code should look something like this:
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558238740999_image.png)
 
-18. Next we need to register a Lambda Layer to wire up the Personalize API with the Python SDK.  This is only required until the Python Lambda runtime is update to include the  Personalize API.  You created the layer in the previous exercise.
-19. Click on "Layers" below the function name in the Lambda Designer panel.
-20. Then click the "Add a layer" button.
-
-
-![Lambda Layer](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaRecAddLayer.png)
-
-21. Select the Layer and the latest version and click the "Add" button.
-
-
-![Lambda Layer Select](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaAddLayerSelect.png)
-
-
 Next, we need to add environment variables so the function can pass recommendation data back to Segment as well as a tracker for the Personalize Campaign to pass real-time data to Personalize.  Your Lambda code needs the Personalize Campaign ARN in order to ask for recommendations from the Personalize service.
 
-
-22. To obtain the Personalize Campaign ARN, browse to the Personalize service landing page in the AWS console in a new tab or window.
-23. Select the Dataset Group you created earlier and then Campaigns in the left navigation.
-24. Click on the "segment-workshop-campaign" you created earlier.
-25. Copy the Campaign ARN to your clipboard.
-26. Don’t close this tab or window, you will need it in the next section.
-
+18. To obtain the Personalize Campaign ARN, browse to the Personalize service landing page in the AWS console in a new tab or window.
+19. Select the Dataset Group you created earlier and then Campaigns in the left navigation.
+20. Click on the "segment-workshop-campaign" you created earlier.
+21. Copy the Campaign ARN to your clipboard.
+22. Don’t close this tab or window, you will need it in the next section.
 
 ![Personalize Campaign ARN](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/PersonalizeCampaignArn.png)
 
-
-27. Return to your Lambda function and scroll down to the "Environment variables" panel.  You may need to click on the function name in the Designer pane to expose the function environment variables.
-28. Add an environment variable with the key `personalize_campaign_arn`.
-29. Paste the Campaign ARN from your clipboard as the value.
-30. Scroll to the top of the page and click the Save button to save your changes.
-
+23. Return to your Lambda function and scroll down to the "Environment variables" panel.  You may need to click on the function name in the Designer pane to expose the function environment variables.
+24. Add an environment variable with the key `personalize_campaign_arn`.
+25. Paste the Campaign ARN from your clipboard as the value.
+26. Scroll to the top of the page and click the Save button to save your changes.
 
 ![Lambda Campaign ARN Environment Variable](https://github.com/james-jory/segment-personalize-workshop/raw/master/exercise4/images/LambdaRecCampaignArn.png)
-
 
 Another critical dependency in your function is the ability to call the Personalize [PutEvents API](https://docs.aws.amazon.com/personalize/latest/dg/API_UBS_PutEvents.html) endpoint so that new event data can be added to the training set for your Personalize solution.  This will enable the following Python code to work properly when sending events to Personalize:
 
@@ -127,68 +109,44 @@ response = personalize_events.put_events(
 
 The `trackingId` function argument in your Lambda code identifies the Personalize Event Tracker which should handle the events you submit. This value is passed to your Lambda function as another environment variable.
 
-
-31. In the browser tab/window you opened earlier, browse to the Personalize service landing page in the AWS console.
-32. Click on the Dataset Group and then "Event trackers" in the left navigation.
-33. Click the "Create event tracker" button.
-
+27. In the browser tab/window you opened earlier, browse to the Personalize service landing page in the AWS console.
+28. Click on the Dataset Group and then "Event trackers" in the left navigation.
+29. Click the "Create event tracker" button.
 
 ![Personalize Event Trackers](images/PersonalizeCreateTracker.png)
 
-34. Enter a name for your Event Tracker.
-35. Click the Next button.
+30. Enter a name for your Event Tracker.
+31. Click the Next button.
 
 ![Personalize Config Event Tracker](images/PersonalizeConfigTracker.png)
 
 The Event Tracker's tracking ID is displayed on the following page and is also available on the Event Tracker's detail page.
 
-36. Copy this value to your clipboard and **be sure to press the "Finish" button**.
+32. Copy this value to your clipboard and **be sure to press the "Finish" button**.
 
 ![Personalize Tracker ID](images/PersonalizeTrackerId.png)
 
-37. Return to your Lambda function.
-38. Create a new key called `personalize_tracking_id`.
-39. Paste the Event Tracker’s tracking ID into the value field.
-40. **Click the Save button at the top of the page to save your changes.**
-
+33. Return to your Lambda function.
+34. Create a new key called `personalize_tracking_id`.
+35. Paste the Event Tracker’s tracking ID into the value field.
+36. **Click the Save button at the top of the page to save your changes.**
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558281914584_image.png)
 
-
 Your Lambda will also need a key for the Segment source that will ingest events you will send back via the Lambda, in order to update recommendations after user actions take place.
 
-
-41. Go back to your Segment workspace tab or window.
-42. Click on the `personas-event-source` source. This source will accept events from your Lambda function.
-43. Copy the write key from the Overview tab to your clipboard.
-
+37. Go back to your Segment workspace tab or window.
+38. Click on the `personas-event-source` source. This source will accept events from your Lambda function.
+39. Copy the write key from the Overview tab to your clipboard.
 
 ![](https://segment.com/docs/destinations/amazon-personalize/images/SegmentWriteKey.png)
 
-
-
-44. Back again to your Lambda tab or window.
-45. Create a new key called `connections_source_write_key`.
-46. Paste the source key you just copied into the value field.
-47. **Scroll to the top of the page and click the Save button to save your changes.**
-
+40. Back again to your Lambda tab or window.
+41. Create a new key called `connections_source_write_key`.
+42. Paste the source key you just copied into the value field.
+43. **Scroll to the top of the page and click the Save button to save your changes.**
 
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282013045_image.png)
-
-
-Finally, you will need to add two more environment variables to your Lambda.  These are only required while Personalize is in Preview, and allow your Lambda to specify which region-specific API endpoints for Personalize your Lambda will use.
-
-
-48. Add an environment variable called `endpoint_url`.
-49. Set the value to  `https://personalize-runtime.us-east-1.amazonaws.com`.
-50. Add an environment variable called `region_name`.
-51. Set the value to  `us-east-1`.
-52. Scroll to the top of the page and click the Save button to save your changes.
-53. Check that your Lambda Environment variables look like the image below.
-
-
-![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558282102471_image.png)
-
 
 Your lambda is now ready to receive events from Segment!  In the next section, you will enable Segment to call your Lambda and send it events.
 
@@ -196,14 +154,10 @@ Your lambda is now ready to receive events from Segment!  In the next section, y
 
 In this section you are going to connect your new Lambda event handler to Segment, via the Segment Personalize Destination.  This will enable events to flow to your Lambda and then to Personalize.
 
-
 1. Go to your Segment workspace.
 2. Click the Add Destination button in the top right of the Destinations list.
 
-
 ![](https://paper-attachments.dropbox.com/s_C2B02AED879A518AEFAF0FFED12CDDE467AF9DAEA3DC2098084E706023E68F50_1558227370476_image.png)
-
-
 
 3. Type “amazon” into the search box in the screen that appears.
 4. Select the Amazon Personalize destination.
