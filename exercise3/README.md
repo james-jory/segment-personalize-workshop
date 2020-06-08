@@ -28,6 +28,8 @@ First we will create a Lambda function that will be called by an API Gateway end
 
 Enter a name for your function and specify Python 3.7 as the runtime. Expand the "Permissions" panel and select an existing IAM role, that has already been created for you, with a name like `module-personalize-SegmentPersonalizeLambdaRole-...`). Click "Create function".
 
+> If you deployed the project's [CloudFormation template](../eventengine/workshop.template) in your own AWS account, the prefix for the IAM role name will be different. Look for the role with `SegmentPersonalizeLambdaRole` in the name.
+
 ![Lambda Function Config](images/LambdaRecEndpointCreate.png)
 
 Scroll down to the "Function code" panel. The source code for the function has already been written and is provided in this repository at [recommendations/lambda_function.py](recommendations/lambda_function.py). Open this file in a new browser tab/window, copy it to your clipboard, and paste it into the source code editor for our Lambda function as shown below. **Click the "Save" button at the top of the page when you're done.**
@@ -35,46 +37,6 @@ Scroll down to the "Function code" panel. The source code for the function has a
 ![Lambda Function Code](images/LambdaRecCode.png)
 
 (Be sure to save your function before proceeding.)
-
-### Wire up Personalize API using Lambda Layer
-
-You will notice in the function source the following `import` and function call.
-
-```python
-import of import init_personalize_api as api_helper
-...
-api_helper.init()
-```
-
-This `import` and function call utilize some boilerplate code, packaged as a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html), needed to configure the Personalize API with the AWS Python SDK. ***This is only necessary until the Personalize API is available in the Python Lambda runtime. Therefore, once the Personalize API is included in the Python Lambda runtime, you can skip the step of installing this layer.*** For now, though, we need to install this Layer once so we can use it across the functions we build in this workshop.
-
-To install our Layer, open the Lambda navigation panel and click "Layers". Make sure you save your function before proceeding.
-
-![Lambda Nav Panel](images/LambdaNav.png)
-
-![Lambda Layers Nav](images/LambdaLayersNav.png)
-
-From the Lambda Layers view, click the "Create layer" button.
-
-![Lambda Create Layer](images/LambdaCreateLayer.png)
-
-Create the layer by specifying a name such as "PersonalizeApiInstaller", browsing to the pre-made zip in this repository at `support/layer/python_personalize_init.zip`, and selecting Python 3.7 as the compatible runtime. Click the "Create" button to upload the zip file and create the layer.
-
-![Lambda Create Layer Config](images/LambdaCreateLayerConfig.png)
-
-Next we need to add the layer just created to our function. Return to the Lambda function by opening the Lambda navigation panel and clicking "Functions".
-
-![Lambda Nav Panel](images/LambdaNav.png)
-
-![Lambda Function Layer Add](images/LambdaFunctionsNav.png)
-
-Click on your function name to access the configuration page again. In the Lambda Designer, click the "Layers" panel below the function name and then the "Add layer" button in the "Referenced layers" panel at the bottom of the page.
-
-![Lambda Function Layer Add](images/LambdaLayerAdd.png)
-
-Select the layer we just added and the latest version. Click "Add" to add the layer to the function.
-
-![Lambda Function Layer Add](images/LambdaLayerAddSelect.png)
 
 Next, we will connect Amazon API Gateway to our Lambda funciton. Select "API Gateway" in the "Add triggers" panel in the Designer panel.
 
